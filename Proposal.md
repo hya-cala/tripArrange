@@ -6,13 +6,27 @@
 
 Yueran Yang (yy9928)
 
-Xiaoxiang Yang ()
+Xiaoxiang Yang (EID: xy4467, Email: xy4467@utexas.edu)
 
 ## Brief Intro of the app
 
-We would like to do a trip planner app, which allows user to manage their planning trips and set up their schedules for those travels. The main functionalities are managing  trips, planning the potential destinations and schedules of the trip and maybe setting up them inside the system calendar. We will not include any recommendations or other advertisements inside this app. 
+We would like to do a trip planner app, which allows user to manage their planning trips and set up their schedules for those travels. The main functionalities are managing trips, planning the potential destinations and schedules of the trip and maybe setting up them inside the system calendar. We will not include any recommendations or other advertisements inside this app. 
+
+## Subsystems of the App
+1. A summary list of planned trips;
+2. A detailed view of each trip, including basic information such as time, location, itinerary, weather, and etc
+3. A login page; 
+4. A map view for visualizing the location of each point of interest;
+5. A calendar view for planning (if time allows).
 
 ## Major User Interface Elements
+After opening the app, there will be a login page provided by Firebase, where users will be able to enter their email and password to log into their accounts.
+After login, there will be a trip summary page, which is basically a list view of all the trips planned.
+Each trip entry on the summary page will be clickable, and once you click on one of them, you will be brought to a detailed view of that particular trip.
+In that will, you will able to see the time, location, detailed itinerary, and current weather associated with that trip.
+On the top of the screen you will have two buttons. One is Map, which if clicked, will bring you into a map view to help visualize the location of each point of interest. Another one is Calendar, which if clicked, will show the itinerary on a calendar.
+
+Please see the attached drawing.
 
 ## Weekly Schedule
 
@@ -25,6 +39,10 @@ We would like to do a trip planner app, which allows user to manage their planni
 - Database
   
   We plan to use Firebase to manage all the authentication data and users' trip data. 
+
+- Weather API
+
+  There are multiple APIs available that can help us get weather information for a given location, such as Openweathermap or Yahoo! Weather.
 
 - Calendar API (potential)
   
