@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "135843755341",
+    "project_id": "to-travel-6ef1e",
+    "storage_bucket": "to-travel-6ef1e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135843755341:android:6b070d79b60fa2cc633304",
+        "android_client_info": {
+          "package_name": "rena.apps.totravel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "135843755341-24vtp7hepq85qbr2mjf9dij74rvfn02h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rena.apps.totravel",
+            "certificate_hash": "195f47311384e22746a85b8e01ebbeccaf5c6b4a"
+          }
+        },
+        {
+          "client_id": "135843755341-v8keoe5e2ga9grup5uejektrlo7oerm5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwe9NQwnZlleiqG22buHjsLkhMT-bIHoI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "135843755341-v8keoe5e2ga9grup5uejektrlo7oerm5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
