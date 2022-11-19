@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "631676419720",
+    "project_id": "totravel-c1741",
+    "storage_bucket": "totravel-c1741.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631676419720:android:2c1c3f0826238e59b7a93d",
+        "android_client_info": {
+          "package_name": "com.example.totravel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "631676419720-7m47c1n05nd8e6f6j0c6ubo5vjjidfb9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.totravel",
+            "certificate_hash": "d178e1f63b7f2c4180fd18138a0a767cb852efa9"
+          }
+        },
+        {
+          "client_id": "631676419720-ke03ijg97fg1lb7jdb6evdm7q1dkgbdc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRsVPrmd4ChyEmYpkYijmpC27Anr4nJRI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "631676419720-ke03ijg97fg1lb7jdb6evdm7q1dkgbdc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
