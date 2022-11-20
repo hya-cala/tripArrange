@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Initialize the sign-in process
-        //AuthInit(viewModel, signInLauncher)
+        // AuthInit(viewModel, signInLauncher)
 
         // Observe title changes
         initTitleObservers()
