@@ -15,77 +15,89 @@
         android:layout_height="wrap_content"
         tools:context=".MainActivity">
 
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/date_and_weather"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:padding="10dp"
+            android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_weather_condition"
-            app:layout_constraintBottom_toTopOf="@id/location"
-            />
-
-        <ImageView
-            android:id="@+id/iv_weather_condition"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintStart_toEndOf="@id/date"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/haze" />
+            app:layout_constraintBottom_toTopOf="@id/location_and_temperature"
+            >
 
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:padding="10dp"
+                />
+
+            <ImageView
+                android:id="@+id/iv_weather_condition"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/haze" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/location_and_temperature"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:padding="10dp"
-            app:layout_constraintTop_toBottomOf="@id/date"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/date_and_weather"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_temperature"
-            app:layout_constraintBottom_toTopOf="@id/imageTextUnion"
-            />
-
-        <TextView
-            android:id="@+id/tv_temperature"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimary"
-            android:textSize="50sp"
-            app:layout_constraintStart_toEndOf="@id/location"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_weather_condition"
             app:layout_constraintBottom_toTopOf="@id/imageTextUnion"
-            tools:text="33" />
+            >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/degree_celsius_symbol"
-            android:textColor="@color/colorPrimary"
-            android:textSize="25sp"
-            app:layout_constraintStart_toEndOf="@id/tv_temperature"
-            app:layout_constraintTop_toTopOf="@id/tv_temperature" />
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:padding="10dp"
+                />
 
+            <TextView
+                android:id="@+id/tv_temperature"
+                android:layout_width="0dp"
+                android:layout_weight="0.3"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp"
+                tools:text="33" />
 
+            <TextView
+                android:id="@+id/tv_temperature_sign"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/degree_celsius_symbol"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp" />
 
-        <!--Kind of a weird construction. The FrameLayout acts like -->
-        <!-- a "union" that can contain either an ImageView or TextView-->
+        </LinearLayout>
+
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/imageTextUnion"
-            app:layout_constraintTop_toBottomOf="@id/tv_temperature"
+            app:layout_constraintTop_toBottomOf="@id/location_and_temperature"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             >
             <ImageView
                 android:id="@+id/picture"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:adjustViewBounds="true"
@@ -93,7 +105,7 @@
                 android:layout_margin="2dp"
                 />
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/notes"

@@ -28,6 +28,8 @@ class TripDetailView : Fragment() {
 
     private lateinit var tripID : String
 
+    private var listToSubmit = List(2) { listOf<Any>() }
+
     // A private variable for the adapter
     private lateinit var adapter: TripDetailsRowAdapter
 
@@ -147,10 +149,13 @@ class TripDetailView : Fragment() {
         binding.recyclerView.adapter = adapter
 
         // Find the a list of trip details matching the given ID
-        var selectedTripDetail = viewModel.getTripDetailByID(tripID)
+        var selectedTripDetails = viewModel.getTripDetailByID(tripID)
+
+        // Update the weather information
+        viewModel.weatherRefresh(tripID)
 
         // Add to the adapter
-        adapter.submitList(selectedTripDetail)
+        adapter.submitList(selectedTripDetails)
 
         // Notify the trip detail changes
         adapter.notifyDataSetChanged()
@@ -159,11 +164,27 @@ class TripDetailView : Fragment() {
         viewModel.observeTripDetail().observe(viewLifecycleOwner) {
 
             // Find the a list of trip details matching the given ID
-            print(tripID)
-            selectedTripDetail = viewModel.getTripDetailByID(tripID)
+            selectedTripDetails = viewModel.getTripDetailByID(tripID)
+
+            // Update the weather information
+            viewModel.weatherRefresh(tripID)
 
             // Add to the adapter
-            adapter.submitList(selectedTripDetail)
+            adapter.submitList(selectedTripDetails)
+
+            // Notify the trip detail changes
+            adapter.notifyDataSetChanged()
+
+        }
+
+        // Let the view model observe changes in the trip weather
+        viewModel.observeTripWeather().observe(viewLifecycleOwner) {
+
+            // Find the a list of trip details matching the given ID
+            selectedTripDetails = viewModel.getTripDetailByID(tripID)
+
+            // Add to the adapter
+            adapter.submitList(selectedTripDetails)
 
             // Notify the trip detail changes
             adapter.notifyDataSetChanged()

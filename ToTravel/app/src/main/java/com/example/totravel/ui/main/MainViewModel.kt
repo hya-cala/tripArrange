@@ -1,18 +1,34 @@
 package com.example.totravel.ui.main
 
 import androidx.lifecycle.*
+import com.example.totravel.api.CurrentWeatherResponse
+import com.example.totravel.api.Repository
+import com.example.totravel.api.WeatherApi
 import edu.utap.photolist.FirestoreAuthLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 data class TripInfo(val tripName: String, val tripDate: String, val tripID: String)
 data class TripDetail(val travelDate: String, val location: String, val tripNotes: String,
                       val tripID: String, val tripDayID: String)
+data class TripLocation(val location: String, val tripID: String)
 
 class MainViewModel : ViewModel() {
     // TODO: Implement the ViewModel
 
+    companion object {
+        val weatherAppID = "484377a76210f32f50c49ada34d7aa9c"
+    }
+
     // Authentication data
     private var firebaseAuthLiveData = FirestoreAuthLiveData()
+
+    // Initialize a Weather API object
+    private val weatherAPI = WeatherApi.create()
+
+    // Create a repository
+    private val weatherRepository = Repository(weatherAPI)
 
     // Create a list of trip summaries
     private val tripSummaryList = MediatorLiveData<MutableList<TripInfo>>()
@@ -20,11 +36,17 @@ class MainViewModel : ViewModel() {
     // Create a list of trip details
     private val tripDetailList = MediatorLiveData<MutableList<TripDetail>>()
 
+    // Create a list of trip locations
+    private val tripLocations = mutableListOf<TripLocation>()
+
     // Create a list of trip ID
     private val tripIDKeys = mutableListOf<String>()
 
     // Create a list of IDs for individual days within a trip
     private val tripDayIDKeys = mutableListOf<String>()
+
+    // Create a variable for the weather information
+    private val weatherInfo = MediatorLiveData<List<CurrentWeatherResponse>>()
 
     // Create a variable to store the title
     private var title = MutableLiveData<String>()
@@ -141,6 +163,12 @@ class MainViewModel : ViewModel() {
         // Update the value
         tripDetailList.postValue(currentTripDetails)
 
+        // Generate a new trip location
+        val newTripLocation = TripLocation(newTripDetail.location, newTripDetail.tripID)
+
+        // Add the new trip location
+        tripLocations.add(newTripLocation)
+
         // Add the key of the new trip detail
         tripDayIDKeys.add(newTripDetail.tripDayID)
 
@@ -163,6 +191,56 @@ class MainViewModel : ViewModel() {
 
         // Update the value
         tripDetailList.postValue(currentTripDetailList)
+
+    }
+
+    // Get the trip locations matching a given ID
+    private fun getTripLocationByID(tripDetailID: String): List<String> {
+
+        // Get a list of trip locations that matches the given ID
+        val tripLocations = tripLocations.filter { it.tripID == tripDetailID }
+
+        // Return a list of locations
+        return tripLocations.map { it.location }
+
+    }
+
+    fun weatherRefresh(tripDetailID: String) {
+
+        // Get a list of trip locations matching the given ID
+        val locations = getTripLocationByID(tripDetailID)
+
+        viewModelScope.launch (
+            context = viewModelScope.coroutineContext
+                    + Dispatchers.IO) {
+
+            // Retrieve the weather information corresponding to each location
+            weatherInfo.postValue(locations.map{ weatherRepository.fetchWeather(it, weatherAppID)})
+
+        }
+
+    }
+
+    // Check the position is valid
+    fun validWeatherPosition(position: Int): Boolean {
+
+        return (position >= 0) and (position < weatherInfo.value!!.size)
+
+    }
+
+    // Get the current trip weather list
+    fun getTripWeather(): List<CurrentWeatherResponse> {
+
+        // Return the result
+        return weatherInfo.value!!
+
+    }
+
+    // Observe changes in the trip weathers
+    fun observeTripWeather(): MediatorLiveData<List<CurrentWeatherResponse>> {
+
+        // Return the result
+        return weatherInfo
 
     }
 

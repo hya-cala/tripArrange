@@ -5,8 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.GenericTransitionOptions.with
+import com.bumptech.glide.Glide.with
 import com.example.totravel.databinding.RowTripDetailsBinding
 import com.example.totravel.databinding.RowTripSummaryBinding
+import com.example.totravel.glide.Glide
 
 class TripDetailsRowAdapter(private val viewModel: MainViewModel)
     : ListAdapter<TripDetail, TripDetailsRowAdapter.VH>(TripDetailsDiff()){
@@ -47,6 +50,23 @@ class TripDetailsRowAdapter(private val viewModel: MainViewModel)
 
         // Set the travel notes
         binding.notes.text = tripDetail.tripNotes
+
+        // Check to make sure the entry is valid
+        if (viewModel.validWeatherPosition(position)) {
+
+            // Retrieve the current weather information
+            val tripWeather = viewModel.getTripWeather()
+
+            // Set the temperature
+            binding.tvTemperature.text = tripWeather[position].main.temp.toString()
+
+            // Set the weather icon
+            val weatherIcon = tripWeather[position].weather[0].icon
+            val weatherURL = "http://openweathermap.org/img/wn/$weatherIcon@2x.png"
+
+            Glide.glideFetch(weatherURL, weatherURL, binding.ivWeatherCondition)
+
+        }
 
     }
 
