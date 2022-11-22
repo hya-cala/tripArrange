@@ -11,12 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.totravel.MainActivity
 import com.example.totravel.R
-import com.example.totravel.databinding.ActivityMainBinding
 import com.example.totravel.databinding.FragmentRvBinding
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class TripDetailView : Fragment() {
 
@@ -27,8 +27,6 @@ class TripDetailView : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var tripID : String
-
-    private var listToSubmit = List(2) { listOf<Any>() }
 
     // A private variable for the adapter
     private lateinit var adapter: TripDetailsRowAdapter
@@ -49,11 +47,55 @@ class TripDetailView : Fragment() {
     private fun initAdapter(binding: FragmentRvBinding) : TripDetailsRowAdapter {
 
         // Initialize the adapter
-        adapter = TripDetailsRowAdapter(viewModel)
+        adapter = TripDetailsRowAdapter(viewModel) {tripID, tripDate ->
+
+            // Create a tripDayID
+            val oldTripDayID = "$tripID - $tripDate"
+
+            // Set the ID for the old trip detail
+            viewModel.setOldTripDetailID(oldTripDayID)
+
+            // Launch the trip detail edit
+            parentFragmentManager.commit {
+                add(R.id.main_frame, TripDetailEdit.newInstance())
+                addToBackStack(null)
+            }
+            
+        }
 
         // Return the adapter
         return adapter
 
+    }
+
+    // Gets the position of the selected item
+    private fun getPos(holder: RecyclerView.ViewHolder) : Int {
+        val pos = holder.bindingAdapterPosition
+        // notifyDataSetChanged was called, so position is not known
+        if( pos == RecyclerView.NO_POSITION) {
+            return holder.absoluteAdapterPosition
+        }
+        return pos
+    }
+
+    // Detecting swipes or moving items
+    private fun initTouchHelper(): ItemTouchHelper {
+        val simpleItemTouchCallback =
+            object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.START)
+            {
+                override fun onMove(recyclerView: RecyclerView,
+                                    viewHolder: RecyclerView.ViewHolder,
+                                    target: RecyclerView.ViewHolder): Boolean {
+                    return true
+                }
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder,
+                                      direction: Int) {
+                    val position = getPos(viewHolder)
+                    Log.d(javaClass.simpleName, "Swipe delete $position")
+                    viewModel.removeTripDetailAt(position)
+                }
+            }
+        return ItemTouchHelper(simpleItemTouchCallback)
     }
 
     // Set onClickListener on the floating action button
@@ -140,6 +182,9 @@ class TripDetailView : Fragment() {
 
         // Set up the floating action button
         setFloatingActionButton()
+
+        // Swipe left to delete
+        initTouchHelper().attachToRecyclerView(binding.recyclerView)
 
         // Set up the layout manager
         binding.recyclerView.layoutManager = LinearLayoutManager(binding.recyclerView.context)

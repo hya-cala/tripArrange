@@ -38,7 +38,6 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
         // Put cursor in edit text
         binding.inputETDate.requestFocus()
 
-
         // Set onClickListener on the save button
         binding.saveButton.setOnClickListener {
 
@@ -65,8 +64,21 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                 // Create a trip detail object
                 val newTripDetail = TripDetail(tripDate, tripLocation, tripNotes, tripID, tripDayID)
 
-                // Save the trip summary entry
-                viewModel.addTripDetail(newTripDetail)
+                // Check if want to update instead
+                if (viewModel.getOldTripDetailID().isNotEmpty()) {
+
+                    // Update the trip detail
+                    viewModel.updateTripDetail(viewModel.getOldTripDetailID(), newTripDetail)
+
+                    // Set the old trip detail to empty
+                    viewModel.setOldTripDetailID("")
+
+                } else {
+
+                    // Save the trip summary entry
+                    viewModel.addTripDetail(newTripDetail)
+
+                }
 
             }
 

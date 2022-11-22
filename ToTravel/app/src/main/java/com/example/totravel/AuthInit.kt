@@ -6,7 +6,6 @@ import androidx.activity.result.ActivityResultLauncher
 import com.example.totravel.ui.main.MainViewModel
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
 
 // https://firebase.google.com/docs/auth/android/firebaseui
 class AuthInit(viewModel: MainViewModel, signInLauncher: ActivityResultLauncher<Intent>) {

@@ -4,19 +4,14 @@ import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import com.example.totravel.databinding.ActionBarBinding
 import com.example.totravel.databinding.ActivityMainBinding
 import com.example.totravel.ui.main.*
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.FirebaseApp
 import edu.utap.photolist.AuthInit
 

@@ -1,7 +1,6 @@
 package com.example.totravel.glide
 
 import android.content.Context
-import android.content.res.Resources
 import android.os.Build
 import android.text.Html
 import android.util.Log

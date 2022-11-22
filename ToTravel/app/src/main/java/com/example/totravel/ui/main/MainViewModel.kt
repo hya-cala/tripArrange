@@ -10,8 +10,9 @@ import kotlinx.coroutines.launch
 
 
 data class TripInfo(val tripName: String, val tripDate: String, val tripID: String)
-data class TripDetail(val travelDate: String, val location: String, val tripNotes: String,
-                      val tripID: String, val tripDayID: String)
+data class TripDetail(
+    var travelDate: String, var location: String, var tripNotes: String,
+    val tripID: String, val tripDayID: String)
 data class TripLocation(val location: String, val tripID: String)
 
 class MainViewModel : ViewModel() {
@@ -51,6 +52,9 @@ class MainViewModel : ViewModel() {
     // Create a variable to store the title
     private var title = MutableLiveData<String>()
 
+    // Create a variable to store the ID for the trip detail to be updated
+    private var oldTripDetailID = ""
+
     // Observe changes in the title
     fun observeTitle(): LiveData<String> {
         return title
@@ -69,6 +73,16 @@ class MainViewModel : ViewModel() {
     // Reset the title
     fun resetTitle() {
         title.value = "ToTravel"
+    }
+
+    // Set the old trip detail ID
+    fun setOldTripDetailID(oldTripID: String) {
+        oldTripDetailID = oldTripID
+    }
+
+    // Get the old trip detail ID
+    fun getOldTripDetailID(): String {
+        return oldTripDetailID
     }
 
     // Observe changes in the trip summary
@@ -114,9 +128,6 @@ class MainViewModel : ViewModel() {
 
     // Remove a trip summary from the list
     fun removeTripSummaryAt(currentTripSummaryPosition: Int) {
-
-        // Find the index of the current trip summary
-        // val index =tripIDKeys.indexOf(currentTripSummary.tripID)
 
         // Remove the key of current trip summary from the key list
         tripIDKeys.removeAt(currentTripSummaryPosition)
@@ -175,22 +186,47 @@ class MainViewModel : ViewModel() {
     }
 
     // Remove a trip detail from the list
-    fun removeTripDetail(currentTripDetail: TripDetail) {
-
-        // Find the index of the current trip detail
-        val index = tripDayIDKeys.indexOf(currentTripDetail.tripDayID)
+    fun removeTripDetailAt(currentTripDetailPosition: Int) {
 
         // Remove the key of the current trip detail from the key list
-        tripDayIDKeys.removeAt(index)
+        tripDayIDKeys.removeAt(currentTripDetailPosition)
+
+        // Remove the location of the current trip detail from the list
+        tripLocations.removeAt(currentTripDetailPosition)
 
         // Retrieve the current trip detail list
         val currentTripDetailList = getTripDetail()
 
         // Remove current trip detail from the list
-        currentTripDetailList.removeAt(index)
+        currentTripDetailList.removeAt(currentTripDetailPosition)
 
         // Update the value
         tripDetailList.postValue(currentTripDetailList)
+
+    }
+
+    // Update trip detail
+    fun updateTripDetail(tripDetailID: String, tripDetail: TripDetail) {
+
+        // Find the index of the trip detail to update
+        val tripDetailIndex = tripDayIDKeys.indexOf(tripDetailID)
+
+        // Retrieve the current trip detail list
+        val currentTripDetails = getTripDetail()
+
+        // Update the trip detail
+        currentTripDetails[tripDetailIndex].travelDate = tripDetail.travelDate
+        currentTripDetails[tripDetailIndex].location = tripDetail.location
+        currentTripDetails[tripDetailIndex].tripNotes = tripDetail.tripNotes
+
+        // Update the value
+        tripDetailList.postValue(currentTripDetails)
+
+        // Update the trip day ID list
+        tripDayIDKeys[tripDetailIndex] = "${tripDetail.tripID} - ${tripDetail.travelDate}"
+
+        // Update the location list
+        tripLocations[tripDetailIndex] = TripLocation(tripDetail.location, tripDetail.tripID)
 
     }
 

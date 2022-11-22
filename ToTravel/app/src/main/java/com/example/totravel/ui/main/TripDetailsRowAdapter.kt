@@ -2,24 +2,36 @@ package com.example.totravel.ui.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.GenericTransitionOptions.with
-import com.bumptech.glide.Glide.with
+import com.example.totravel.R
 import com.example.totravel.databinding.RowTripDetailsBinding
-import com.example.totravel.databinding.RowTripSummaryBinding
 import com.example.totravel.glide.Glide
 
-class TripDetailsRowAdapter(private val viewModel: MainViewModel)
+class TripDetailsRowAdapter(private val viewModel: MainViewModel,
+                            private val longClickListener: (tripID: String, tripDate: String) ->
+                            Unit)
     : ListAdapter<TripDetail, TripDetailsRowAdapter.VH>(TripDetailsDiff()){
 
     // ViewHolder pattern holds row binding
     inner class VH(val tripDetailRowBinding : RowTripDetailsBinding) :
         RecyclerView.ViewHolder(tripDetailRowBinding.root) {
 
-        // Set up the binding
-        val tripRowBinding = tripDetailRowBinding
+        init {
+
+            // Get the text view of the trip name
+            val tripID = viewModel.getTitle()
+
+            // Get the text view of the trip date
+            val tripDate: TextView = tripDetailRowBinding.root.findViewById(R.id.date)
+
+            // Set the onClickListener
+            tripDetailRowBinding.root.setOnClickListener {
+                longClickListener(tripID, tripDate.text as String)}
+
+        }
 
     }
 
@@ -40,7 +52,7 @@ class TripDetailsRowAdapter(private val viewModel: MainViewModel)
         val tripDetail = getItem(position)
 
         // Retrieve the current row binding
-        val binding = holder.tripRowBinding
+        val binding = holder.tripDetailRowBinding
 
         // Set the travel date
         binding.date.text = tripDetail.travelDate
