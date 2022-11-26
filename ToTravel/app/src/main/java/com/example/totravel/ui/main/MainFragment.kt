@@ -42,8 +42,10 @@ class MainFragment : Fragment() {
     // Set up the adapter
     private fun initAdapter(binding: FragmentRvBinding) : TripSummaryRowAdapter {
 
+        viewModel.fetchTrips()
+
         // Initialize the adapter
-        adapter = TripSummaryRowAdapter(viewModel) {tripName, tripDate ->
+        adapter = TripSummaryRowAdapter(viewModel) {tripName, tripDate, position ->
 
             // Create a new bundle
             val bundle = Bundle()
@@ -51,11 +53,15 @@ class MainFragment : Fragment() {
             // Create a trip ID
             val tripID = "$tripName - $tripDate"
 
-            // Insert the trip ID
+            // Insert the trip ID and the position
             bundle.putString("TripID", tripID)
+            bundle.putInt("position", position)
+
+            viewModel.updateCurrentTripPosition(position)
 
             // Create a new trip detail fragment
             val tripDetailFrag = TripDetailView.newInstance()
+
 
             // Set the arguments
             tripDetailFrag.arguments = bundle
@@ -96,7 +102,7 @@ class MainFragment : Fragment() {
                                       direction: Int) {
                     val position = getPos(viewHolder)
                     Log.d(javaClass.simpleName, "Swipe delete $position")
-                    viewModel.removeTripSummaryAt(position)
+                    viewModel.removeTrip(position)
                 }
             }
         return ItemTouchHelper(simpleItemTouchCallback)
@@ -161,7 +167,7 @@ class MainFragment : Fragment() {
         initTouchHelper().attachToRecyclerView(binding.recyclerView)
 
         // Let the view model observe changes in the trip summaries
-        viewModel.observeTripSummary().observe(viewLifecycleOwner) {
+        viewModel.observeTripList().observe(viewLifecycleOwner) {
 
             // Add the trip summaries to the adapter
             adapter.submitList(it)

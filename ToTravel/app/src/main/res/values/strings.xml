@@ -9,8 +9,10 @@
     <string name="label_sunrise">Sunrise</string>
     <string name="label_sunset">Sunset</string>
     <string name="hint_enter_trip_name">Enter your trip name!</string>
-    <string name="hint_enter_trip_date">Enter your trip date!</string>
-    <string name="hint_enter_date">Enter the date!</string>
+    <string name="hint_enter_trip_start_date">Enter your trip start date!</string>
+    <string name="hint_enter_trip_end_date">Enter your trip end date!</string>
+    <string name="hint_enter_start_date">Enter the start date!</string>
+    <string name="hint_enter_end_date">Enter the end date!</string>
     <string name="hint_enter_location">Enter the location!</string>
     <string name="hint_enter_notes">Enter the notes!</string>
     <string name="cancel">Cancel</string>

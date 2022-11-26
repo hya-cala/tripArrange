@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.totravel.MainActivity
 import com.example.totravel.R
 import com.example.totravel.databinding.FragmentRvBinding
+import kotlin.properties.Delegates
 
 class TripDetailView : Fragment() {
 
@@ -25,6 +26,7 @@ class TripDetailView : Fragment() {
 
     private var _binding: FragmentRvBinding? = null
     private val binding get() = _binding!!
+    private var position by Delegates.notNull<Int>()
 
     private lateinit var tripID : String
 
@@ -45,6 +47,9 @@ class TripDetailView : Fragment() {
 
     // Set up the adapter
     private fun initAdapter(binding: FragmentRvBinding) : TripDetailsRowAdapter {
+        position = requireArguments().getInt("position")
+
+        viewModel.fetchDestinations(position)
 
         // Initialize the adapter
         adapter = TripDetailsRowAdapter(viewModel) {tripID, tripDate ->
@@ -199,23 +204,17 @@ class TripDetailView : Fragment() {
         // Update the weather information
         viewModel.weatherRefresh(tripID)
 
-        // Add to the adapter
-        adapter.submitList(selectedTripDetails)
-
         // Notify the trip detail changes
         adapter.notifyDataSetChanged()
 
         // Let the view model observe changes
-        viewModel.observeTripDetail().observe(viewLifecycleOwner) {
-
-            // Find the a list of trip details matching the given ID
-            selectedTripDetails = viewModel.getTripDetailByID(tripID)
+        viewModel.observeCurrentDestinations().observe(viewLifecycleOwner) {
 
             // Update the weather information
             viewModel.weatherRefresh(tripID)
 
             // Add to the adapter
-            adapter.submitList(selectedTripDetails)
+            adapter.submitList(it.toList())
 
             // Notify the trip detail changes
             adapter.notifyDataSetChanged()
@@ -229,7 +228,7 @@ class TripDetailView : Fragment() {
             selectedTripDetails = viewModel.getTripDetailByID(tripID)
 
             // Add to the adapter
-            adapter.submitList(selectedTripDetails)
+            adapter.submitList(viewModel.observeCurrentDestinations().value)
 
             // Notify the trip detail changes
             adapter.notifyDataSetChanged()

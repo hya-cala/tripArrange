@@ -4,9 +4,13 @@ import androidx.lifecycle.*
 import com.example.totravel.api.CurrentWeatherResponse
 import com.example.totravel.api.Repository
 import com.example.totravel.api.WeatherApi
+import com.example.totravel.database.dbHelper
+import com.example.totravel.model.DestinationMeta
+import com.example.totravel.model.TripMeta
 import edu.utap.photolist.FirestoreAuthLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.google.firebase.Timestamp
 
 
 data class TripInfo(val tripName: String, val tripDate: String, val tripID: String)
@@ -15,12 +19,16 @@ data class TripDetail(
     val tripID: String, val tripDayID: String)
 data class TripLocation(val location: String, val tripID: String)
 
+data class TripWithDest(val tripMeta: TripMeta, var destinations: MutableList<DestinationMeta>?)
+
 class MainViewModel : ViewModel() {
     // TODO: Implement the ViewModel
 
     companion object {
         val weatherAppID = "484377a76210f32f50c49ada34d7aa9c"
     }
+
+    private val dbHelper = dbHelper()
 
     // Authentication data
     private var firebaseAuthLiveData = FirestoreAuthLiveData()
@@ -31,17 +39,11 @@ class MainViewModel : ViewModel() {
     // Create a repository
     private val weatherRepository = Repository(weatherAPI)
 
-    // Create a list of trip summaries
-    private val tripSummaryList = MediatorLiveData<MutableList<TripInfo>>()
-
     // Create a list of trip details
     private val tripDetailList = MediatorLiveData<MutableList<TripDetail>>()
 
     // Create a list of trip locations
     private val tripLocations = mutableListOf<TripLocation>()
-
-    // Create a list of trip ID
-    private val tripIDKeys = mutableListOf<String>()
 
     // Create a list of IDs for individual days within a trip
     private val tripDayIDKeys = mutableListOf<String>()
@@ -52,8 +54,120 @@ class MainViewModel : ViewModel() {
     // Create a variable to store the title
     private var title = MutableLiveData<String>()
 
+    private var tripLists = MutableLiveData<List<TripWithDest>>()
+
+    private val currentTrip = MutableLiveData<Int>()
+
+    private val currentDestinations = MediatorLiveData<MutableList<DestinationMeta>>()
+    init {
+        currentDestinations.addSource(
+            tripLists
+        ) {
+            if (currentTrip.value != null && tripLists.value != null) {
+                println(tripLists.value)
+                println(currentTrip.value)
+                currentDestinations.postValue(
+                    tripLists.value!![currentTrip.value!!].destinations ?: emptyList<DestinationMeta>().toMutableList()
+                )
+            }
+        }
+        currentDestinations.addSource(currentTrip) {
+            if (currentTrip.value != null) {
+                currentDestinations.postValue(
+                    tripLists.value?.get(currentTrip.value!!)?.destinations ?: emptyList<DestinationMeta>().toMutableList()
+                )
+            }
+        }
+    }
+
+
     // Create a variable to store the ID for the trip detail to be updated
     private var oldTripDetailID = ""
+
+    fun fetchTrips() {
+        dbHelper.fetchTripMeta(tripLists)
+    }
+
+    fun fetchDestinations(position: Int) {
+        if (tripLists.value == null || tripLists.value!![position].destinations != null) {
+            return
+        }
+        dbHelper.fetchDestinationMeta(position, tripLists)
+    }
+
+    fun removeTrip(position: Int) {
+        val trip = tripLists.value?.get(position)
+        trip?.tripMeta?.let { dbHelper.removeTripMeta(it, tripLists) }
+    }
+
+    fun removeDestination(tripPosition: Int, destinationPosition: Int) {
+        val trip = tripLists.value?.get(tripPosition)
+        val destination = trip?.destinations?.get(destinationPosition)
+        if (destination != null) {
+            dbHelper.removeDestinationMeta(destination,tripPosition, tripLists)
+        }
+    }
+
+    fun addTrip(tripName: String, description: String, startDate: Timestamp, endDate: Timestamp) {
+        val currentUser = firebaseAuthLiveData.getCurrentUser()!!
+        val tripMeta = TripMeta(
+            ownerUid = currentUser.uid,
+            tripName = tripName,
+            description = description,
+            startDate = startDate,
+            endDate = endDate,
+        )
+        dbHelper.createTripMeta(tripMeta, tripLists)
+    }
+
+    fun addDestination(
+        tripPosition: Int,
+        destination: String,
+        description: String,
+        startDate: Timestamp,
+        endDate: Timestamp,
+    ) {
+        val trip = tripLists.value?.get(tripPosition)
+        val currentUser = firebaseAuthLiveData.getCurrentUser()!!
+        val destinationMeta = DestinationMeta(
+            ownerUid = currentUser.uid,
+            tripUuid = trip!!.tripMeta!!.firestoreID,
+            destination = destination,
+            description = description,
+            startDate = startDate,
+            endDate = endDate,
+        )
+        dbHelper.createDestinationMeta(destinationMeta, tripPosition, tripLists)
+    }
+
+    fun getCurrentTripPosition(): Int {
+        return currentTrip.value!!
+    }
+
+    fun updateCurrentTripPosition(position: Int) {
+        currentTrip.postValue(position)
+    }
+
+    fun observeCurrentDestinations(): LiveData<MutableList<DestinationMeta>> {
+        return currentDestinations
+    }
+
+    fun getTripMeta(position: Int): TripMeta {
+        val trip = tripLists.value?.get(position)
+        return trip!!.tripMeta!!
+    }
+
+    fun getDestinationMetaList(position: Int): List<DestinationMeta> {
+        val trip = tripLists.value?.get(position)
+        if (trip != null && trip.destinations == null) {
+            dbHelper.fetchDestinationMeta(position, tripLists)
+        }
+        return trip?.destinations?.toList() ?: emptyList()
+    }
+
+    fun observeTripList(): LiveData<List<TripWithDest>> {
+        return tripLists
+    }
 
     // Observe changes in the title
     fun observeTitle(): LiveData<String> {
@@ -80,68 +194,6 @@ class MainViewModel : ViewModel() {
         oldTripDetailID = oldTripID
     }
 
-    // Get the old trip detail ID
-    fun getOldTripDetailID(): String {
-        return oldTripDetailID
-    }
-
-    // Observe changes in the trip summary
-    fun observeTripSummary(): MediatorLiveData<MutableList<TripInfo>> {
-
-        // Return the result
-        return tripSummaryList
-
-    }
-
-    // Observe changes in the trip details
-    fun observeTripDetail(): MediatorLiveData<MutableList<TripDetail>> {
-
-        // Return the result
-        return tripDetailList
-
-    }
-
-    // Get the current trip summary list
-    fun getTripSummary(): MutableList<TripInfo> {
-
-        // Return the result
-        return tripSummaryList.value ?: mutableListOf()
-
-    }
-
-    // Add to the trip summary
-    fun addTripSummary(newTripSummary: TripInfo) {
-
-        // Retrieve the current trip summary list
-        val currentTripSummaries = getTripSummary()
-
-        // Add the new trip summary
-        currentTripSummaries.add(newTripSummary)
-
-        // Update the value
-        tripSummaryList.postValue(currentTripSummaries)
-
-        // Add the key of the new trip summary
-        tripIDKeys.add(newTripSummary.tripID)
-
-    }
-
-    // Remove a trip summary from the list
-    fun removeTripSummaryAt(currentTripSummaryPosition: Int) {
-
-        // Remove the key of current trip summary from the key list
-        tripIDKeys.removeAt(currentTripSummaryPosition)
-
-        // Retrieve the current trip summary list
-        val currentTripSummaryList = getTripSummary()
-
-        // Remove the current trip summary from the list
-        currentTripSummaryList.removeAt(currentTripSummaryPosition)
-
-        // Update the value
-        tripSummaryList.postValue(currentTripSummaryList)
-
-    }
 
     // Get the current trip detail list
     fun getTripDetail(): MutableList<TripDetail> {
@@ -159,29 +211,6 @@ class MainViewModel : ViewModel() {
 
         // Get a list of trip details that matches the given ID
         return fullTripDetailList.filter{it.tripID == tripDetailID}
-
-    }
-
-    // Add to the trip detail
-    fun addTripDetail(newTripDetail: TripDetail) {
-
-        // Retrieve the current trip detail list
-        val currentTripDetails = getTripDetail()
-
-        // Add the new trip detail
-        currentTripDetails.add(newTripDetail)
-
-        // Update the value
-        tripDetailList.postValue(currentTripDetails)
-
-        // Generate a new trip location
-        val newTripLocation = TripLocation(newTripDetail.location, newTripDetail.tripID)
-
-        // Add the new trip location
-        tripLocations.add(newTripLocation)
-
-        // Add the key of the new trip detail
-        tripDayIDKeys.add(newTripDetail.tripDayID)
 
     }
 
@@ -205,30 +234,6 @@ class MainViewModel : ViewModel() {
 
     }
 
-    // Update trip detail
-    fun updateTripDetail(tripDetailID: String, tripDetail: TripDetail) {
-
-        // Find the index of the trip detail to update
-        val tripDetailIndex = tripDayIDKeys.indexOf(tripDetailID)
-
-        // Retrieve the current trip detail list
-        val currentTripDetails = getTripDetail()
-
-        // Update the trip detail
-        currentTripDetails[tripDetailIndex].travelDate = tripDetail.travelDate
-        currentTripDetails[tripDetailIndex].location = tripDetail.location
-        currentTripDetails[tripDetailIndex].tripNotes = tripDetail.tripNotes
-
-        // Update the value
-        tripDetailList.postValue(currentTripDetails)
-
-        // Update the trip day ID list
-        tripDayIDKeys[tripDetailIndex] = "${tripDetail.tripID} - ${tripDetail.travelDate}"
-
-        // Update the location list
-        tripLocations[tripDetailIndex] = TripLocation(tripDetail.location, tripDetail.tripID)
-
-    }
 
     // Get the trip locations matching a given ID
     private fun getTripLocationByID(tripDetailID: String): List<String> {

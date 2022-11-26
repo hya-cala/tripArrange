@@ -7,11 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.totravel.R
+import com.example.totravel.Tools.DateTool
 import com.example.totravel.databinding.RowTripSummaryBinding
+import com.example.totravel.model.DestinationMeta
 
 class TripSummaryRowAdapter(private val viewModel: MainViewModel,
-                            private val clickListener: (tripName: String, tripDate: String) -> Unit)
-    : ListAdapter<TripInfo, TripSummaryRowAdapter.VH>(TripSummaryDiff()){
+                            private val clickListener: (tripName: String, tripDate: String, position: Int) -> Unit)
+    : ListAdapter<TripWithDest, TripSummaryRowAdapter.VH>(TripSummaryDiff()){
 
     // A private variable for storing the trip ID
     private lateinit var tripID : String
@@ -30,7 +32,7 @@ class TripSummaryRowAdapter(private val viewModel: MainViewModel,
 
             // Set the onClickListener
             tripSummaryRowBinding.root.setOnClickListener {
-                clickListener(tripName.text as String, tripDate.text as String)}
+                clickListener(tripName.text as String, tripDate.text as String, bindingAdapterPosition)}
 
         }
 
@@ -56,27 +58,34 @@ class TripSummaryRowAdapter(private val viewModel: MainViewModel,
         val binding = holder.tripSummaryRowBinding
 
         // Set the trip name
-        binding.tripName.text = trip.tripName
+        binding.tripName.text = trip.tripMeta.tripName
 
         // Set the trip date
-        binding.date.text = trip.tripDate
+        if (trip.tripMeta.startDate?.toDate() == null) {
+            binding.date.text = ""
+        } else {
+            binding.date.text = DateTool.dateToString(
+                trip.tripMeta.startDate?.toDate()!!)
+        }
+
 
         // Store the current trip ID
-        tripID = trip.tripID
+        tripID = trip . tripMeta . firestoreID
 
 
     }
 
     // Check item identity
-    class TripSummaryDiff : DiffUtil.ItemCallback<TripInfo>() {
+    class TripSummaryDiff : DiffUtil.ItemCallback<TripWithDest>() {
         // Item identity
-        override fun areItemsTheSame(oldItem: TripInfo, newItem: TripInfo): Boolean {
+        override fun areItemsTheSame(oldItem: TripWithDest, newItem: TripWithDest): Boolean {
             return oldItem.hashCode() == newItem.hashCode()
         }
         // Item contents are the same, but the object might have changed
-        override fun areContentsTheSame(oldItem: TripInfo, newItem: TripInfo): Boolean {
-            return oldItem.tripName == newItem.tripName
-                    && oldItem.tripDate == newItem.tripDate
+        override fun areContentsTheSame(oldItem: TripWithDest, newItem: TripWithDest): Boolean {
+            return oldItem.tripMeta.tripName == newItem.tripMeta.tripName
+                    && oldItem.tripMeta.startDate == newItem.tripMeta.startDate
+                    && oldItem.tripMeta.endDate == oldItem.tripMeta.endDate
         }
     }
 
