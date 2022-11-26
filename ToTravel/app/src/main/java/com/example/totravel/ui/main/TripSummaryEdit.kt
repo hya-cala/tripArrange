@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.totravel.R
 import com.example.totravel.databinding.TripSummaryEditBinding
+import com.google.firebase.Timestamp
+import java.util.*
 
 class TripSummaryEdit : Fragment(R.layout.trip_summary_edit) {
 
@@ -57,7 +59,16 @@ class TripSummaryEdit : Fragment(R.layout.trip_summary_edit) {
                 val newTripInfo = TripInfo(tripName, tripDate, tripID)
 
                 // Save the trip summary entry
-                viewModel.addTripSummary(newTripInfo)
+                // TODO: remove those hardcoded things
+                val description = "test"
+                val startDate = Timestamp(Date(2022, 1,1))
+                val endDate = Timestamp(Date(2023, 1,1))
+                viewModel.addTrip(
+                    tripName,
+                    description = description,
+                    startDate = startDate,
+                    endDate = endDate,
+                )
 
             }
 

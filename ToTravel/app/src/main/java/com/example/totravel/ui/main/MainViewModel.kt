@@ -4,9 +4,13 @@ import androidx.lifecycle.*
 import com.example.totravel.api.CurrentWeatherResponse
 import com.example.totravel.api.Repository
 import com.example.totravel.api.WeatherApi
+import com.example.totravel.database.dbHelper
+import com.example.totravel.model.DestinationMeta
+import com.example.totravel.model.TripMeta
 import edu.utap.photolist.FirestoreAuthLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.google.firebase.Timestamp
 
 
 data class TripInfo(val tripName: String, val tripDate: String, val tripID: String)
@@ -15,12 +19,16 @@ data class TripDetail(
     val tripID: String, val tripDayID: String)
 data class TripLocation(val location: String, val tripID: String)
 
+data class TripWithDest(val tripMeta: TripMeta, var destinations: MutableList<DestinationMeta>?)
+
 class MainViewModel : ViewModel() {
     // TODO: Implement the ViewModel
 
     companion object {
         val weatherAppID = "484377a76210f32f50c49ada34d7aa9c"
     }
+
+    private val dbHelper = dbHelper()
 
     // Authentication data
     private var firebaseAuthLiveData = FirestoreAuthLiveData()
@@ -54,6 +62,80 @@ class MainViewModel : ViewModel() {
 
     // Create a variable to store the ID for the trip detail to be updated
     private var oldTripDetailID = ""
+
+    private var tripLists = MutableLiveData<List<TripWithDest>>()
+
+    fun fetchTrips() {
+        dbHelper.fetchTripMeta(tripLists)
+    }
+
+    fun fetchDestinations(position: Int) {
+        if (tripLists.value == null || tripLists.value!![position].destinations != null) {
+            return
+        }
+        dbHelper.fetchDestinationMeta(tripLists.value!![position])
+    }
+
+    fun removeTrip(position: Int) {
+        val trip = tripLists.value?.get(position)
+        trip?.tripMeta?.let { dbHelper.removeTripMeta(it, tripLists) }
+    }
+
+    fun removeDestination(tripPosition: Int, destinationPosition: Int) {
+        val trip = tripLists.value?.get(tripPosition)
+        val destination = trip?.destinations?.get(destinationPosition)
+        if (destination != null) {
+            dbHelper.removeDestinationMeta(destination,trip)
+        }
+    }
+
+    fun addTrip(tripName: String, description: String, startDate: Timestamp, endDate: Timestamp) {
+        val currentUser = firebaseAuthLiveData.getCurrentUser()!!
+        val tripMeta = TripMeta(
+            ownerUid = currentUser.uid,
+            tripName = tripName,
+            description = description,
+            startDate = startDate,
+            endDate = endDate,
+        )
+        dbHelper.createTripMeta(tripMeta, tripLists)
+    }
+
+    fun addDestination
+                (tripPosition: Int,
+                 destination: String,
+                 description: String,
+                 startDate: Timestamp,
+                 endDate: Timestamp) {
+        val trip = tripLists.value?.get(tripPosition)
+        val currentUser = firebaseAuthLiveData.getCurrentUser()!!
+        val destinationMeta = DestinationMeta(
+            ownerUid = currentUser.uid,
+            tripUuid = trip!!.tripMeta!!.firestoreID,
+            destination = destination,
+            description = description,
+            startDate = startDate,
+            endDate = endDate,
+        )
+        dbHelper.createDestinationMeta(destinationMeta, trip)
+    }
+
+    fun getTripMeta(position: Int): TripMeta {
+        val trip = tripLists.value?.get(position)
+        return trip!!.tripMeta!!
+    }
+
+    fun getDestinationMetaList(position: Int): List<DestinationMeta> {
+        val trip = tripLists.value?.get(position)
+        if (trip != null && trip.destinations == null) {
+            dbHelper.fetchDestinationMeta(trip)
+        }
+        return trip?.destinations?.toList() ?: emptyList()
+    }
+
+    fun observeTripList(): LiveData<List<TripWithDest>> {
+        return tripLists
+    }
 
     // Observe changes in the title
     fun observeTitle(): LiveData<String> {

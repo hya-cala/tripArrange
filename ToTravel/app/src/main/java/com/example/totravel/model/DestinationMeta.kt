@@ -1,7 +1,7 @@
 package com.example.totravel.model
 
 import com.google.firebase.firestore.DocumentId
-import java.sql.Timestamp
+import com.google.firebase.Timestamp
 
 data class DestinationMeta(
     var ownerUid: String = "",

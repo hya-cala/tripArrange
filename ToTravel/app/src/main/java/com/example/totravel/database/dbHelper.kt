@@ -33,7 +33,7 @@ class dbHelper() {
         query.limit(100).get()
             .addOnSuccessListener { result ->
                 tripList.postValue(result.documents.mapNotNull {
-                    TripWithDest(it.toObject(TripMeta::class.java),null)
+                    it.toObject(TripMeta::class.java)?.let { it1 -> TripWithDest(it1,null) }
                 })
             }
             .addOnFailureListener {
