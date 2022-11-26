@@ -42,6 +42,8 @@ class MainFragment : Fragment() {
     // Set up the adapter
     private fun initAdapter(binding: FragmentRvBinding) : TripSummaryRowAdapter {
 
+        viewModel.fetchTrips()
+
         // Initialize the adapter
         adapter = TripSummaryRowAdapter(viewModel) {tripName, tripDate, position ->
 

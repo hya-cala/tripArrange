@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.totravel.R
+import com.example.totravel.Tools.DateTool
 import com.example.totravel.databinding.RowTripSummaryBinding
 import com.example.totravel.model.DestinationMeta
 
@@ -60,10 +61,16 @@ class TripSummaryRowAdapter(private val viewModel: MainViewModel,
         binding.tripName.text = trip.tripMeta.tripName
 
         // Set the trip date
-        binding.date.text = trip.tripMeta.startDate?.toDate().toString()
+        if (trip.tripMeta.startDate?.toDate() == null) {
+            binding.date.text = ""
+        } else {
+            binding.date.text = DateTool.dateToString(
+                trip.tripMeta.startDate?.toDate()!!)
+        }
+
 
         // Store the current trip ID
-        tripID = trip.tripMeta.firestoreID
+        tripID = trip . tripMeta . firestoreID
 
 
     }

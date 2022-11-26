@@ -6,7 +6,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.totravel.R
+import com.example.totravel.Tools.DateTool
 import com.example.totravel.databinding.TripDetailEditBinding
+import java.time.LocalDate
+import java.util.*
 
 class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
 
@@ -36,13 +39,91 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
         val tripID = viewModel.getTitle()
 
         // Put cursor in edit text
-        binding.inputETDate.requestFocus()
+        binding.inputETDateStart.requestFocus()
+
+        binding.inputETDateStart.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                binding.datepicker.visibility=View.VISIBLE
+                if (!binding.inputETDateStart.text.isNullOrBlank()) {
+                    val date = DateTool.stringToDate(binding.inputETDateStart.text.toString())
+                    if (date != null) {
+                        binding.datepicker.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
+                            binding.inputETDateStart.setText(
+                                DateTool.dateToString(
+                                    Date(
+                                        year - 1900,
+                                        month,
+                                        day
+                                    )
+                                )
+                            )
+                        }
+                    }
+                }else {
+                    val current = LocalDate.now()
+                    binding.datepicker.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
+                        binding.inputETDateStart.setText(
+                            DateTool.dateToString(
+                                Date(
+                                    year - 1900,
+                                    month,
+                                    day
+                                )
+                            )
+                        )
+                    }
+                }
+            } else {
+                binding.datepicker.visibility = View.GONE
+                binding.datepicker.clearFocus()
+            }
+
+        }
+
+        binding.inputETDateEnd.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                binding.datepicker.visibility=View.VISIBLE
+                if (!binding.inputETDateEnd.text.isNullOrBlank()) {
+                    val date = DateTool.stringToDate(binding.inputETDateEnd.text.toString())
+                    if (date != null) {
+                        binding.datepicker.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
+                            binding.inputETDateEnd.setText(
+                                DateTool.dateToString(
+                                    Date(
+                                        year - 1900,
+                                        month,
+                                        day
+                                    )
+                                )
+                            )
+                        }
+                    }
+                }else {
+                    val current = LocalDate.now()
+                    binding.datepicker.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
+                        binding.inputETDateEnd.setText(
+                            DateTool.dateToString(
+                                Date(
+                                    year - 1900,
+                                    month,
+                                    day
+                                )
+                            )
+                        )
+                    }
+                }
+            } else {
+                binding.datepicker.visibility = View.GONE
+                binding.datepicker.clearFocus()
+            }
+
+        }
 
         // Set onClickListener on the save button
         binding.saveButton.setOnClickListener {
 
             // Retrieve the trip date
-            val tripDate = binding.inputETDate.text.toString()
+            val tripDate = binding.inputETDateStart.text.toString()
 
             // Retrieve the trip location
             val tripLocation = binding.inputETLocation.text.toString()
