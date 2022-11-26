@@ -204,9 +204,6 @@ class TripDetailView : Fragment() {
         // Update the weather information
         viewModel.weatherRefresh(tripID)
 
-        // Add to the adapter
-        adapter.submitList(viewModel.observeCurrentDestinations().value)
-
         // Notify the trip detail changes
         adapter.notifyDataSetChanged()
 
