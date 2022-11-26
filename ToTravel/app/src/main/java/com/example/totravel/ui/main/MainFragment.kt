@@ -57,8 +57,11 @@ class MainFragment : Fragment() {
             bundle.putString("TripID", tripID)
             bundle.putInt("position", position)
 
+            viewModel.updateCurrentTripPosition(position)
+
             // Create a new trip detail fragment
             val tripDetailFrag = TripDetailView.newInstance()
+
 
             // Set the arguments
             tripDetailFrag.arguments = bundle
@@ -99,7 +102,7 @@ class MainFragment : Fragment() {
                                       direction: Int) {
                     val position = getPos(viewHolder)
                     Log.d(javaClass.simpleName, "Swipe delete $position")
-                    viewModel.removeTripSummaryAt(position)
+                    viewModel.removeTrip(position)
                 }
             }
         return ItemTouchHelper(simpleItemTouchCallback)

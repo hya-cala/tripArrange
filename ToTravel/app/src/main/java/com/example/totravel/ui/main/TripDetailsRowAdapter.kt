@@ -7,13 +7,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.totravel.R
+import com.example.totravel.Tools.DateTool.Companion.dateToString
 import com.example.totravel.databinding.RowTripDetailsBinding
 import com.example.totravel.glide.Glide
+import com.example.totravel.model.DestinationMeta
 
 class TripDetailsRowAdapter(private val viewModel: MainViewModel,
                             private val longClickListener: (tripID: String, tripDate: String) ->
                             Unit)
-    : ListAdapter<TripDetail, TripDetailsRowAdapter.VH>(TripDetailsDiff()){
+    : ListAdapter<DestinationMeta, TripDetailsRowAdapter.VH>(TripDetailsDiff()){
 
     // ViewHolder pattern holds row binding
     inner class VH(val tripDetailRowBinding : RowTripDetailsBinding) :
@@ -49,19 +51,19 @@ class TripDetailsRowAdapter(private val viewModel: MainViewModel,
     override fun onBindViewHolder(holder: VH, position: Int) {
 
         // Retrieve the current trip information
-        val tripDetail = getItem(position)
+        val destination = getItem(position)
 
         // Retrieve the current row binding
         val binding = holder.tripDetailRowBinding
 
         // Set the travel date
-        binding.date.text = tripDetail.travelDate
+        binding.date.text = dateToString(destination.startDate!!.toDate())
 
         // Set the travel location
-        binding.location.text = tripDetail.location
+        binding.location.text = destination.destination
 
         // Set the travel notes
-        binding.notes.text = tripDetail.tripNotes
+        binding.notes.text = destination.description
 
         // Check to make sure the entry is valid
         if (viewModel.validWeatherPosition(position)) {
@@ -83,15 +85,16 @@ class TripDetailsRowAdapter(private val viewModel: MainViewModel,
     }
 
     // Check item identity
-    class TripDetailsDiff : DiffUtil.ItemCallback<TripDetail>() {
+    class TripDetailsDiff : DiffUtil.ItemCallback<DestinationMeta>() {
         // Item identity
-        override fun areItemsTheSame(oldItem: TripDetail, newItem: TripDetail): Boolean {
+        override fun areItemsTheSame(oldItem: DestinationMeta, newItem: DestinationMeta): Boolean {
             return oldItem.hashCode() == newItem.hashCode()
         }
         // Item contents are the same, but the object might have changed
-        override fun areContentsTheSame(oldItem: TripDetail, newItem: TripDetail): Boolean {
-            return oldItem.travelDate == newItem.travelDate
-                    && oldItem.location == newItem.location
+        override fun areContentsTheSame(oldItem: DestinationMeta, newItem: DestinationMeta): Boolean {
+            return oldItem.startDate == newItem.startDate
+                    && oldItem.destination == newItem.destination
+                    && oldItem.endDate == newItem.endDate
         }
     }
 
