@@ -64,8 +64,6 @@ class MainViewModel : ViewModel() {
             tripLists
         ) {
             if (currentTrip.value != null && tripLists.value != null) {
-                println(tripLists.value)
-                println(currentTrip.value)
                 currentDestinations.postValue(
                     tripLists.value!![currentTrip.value!!].destinations ?: emptyList<DestinationMeta>().toMutableList()
                 )
