@@ -4,12 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="?attr/actionBarSize"
-    android:background="#FFFFFFFF"
+    android:background="#FFFFFF"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_margin"
-    android:paddingRight="@dimen/activity_margin"
-    android:paddingTop="@dimen/activity_margin">
+    android:padding="16dp"
+>
 
     <TextView
         android:layout_width="wrap_content"
