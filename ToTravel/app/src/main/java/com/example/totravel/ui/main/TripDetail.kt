@@ -60,6 +60,8 @@ class TripDetailView : Fragment() {
             // Set the ID for the old trip detail
             viewModel.setOldTripDetailID(oldTripDayID)
 
+            viewModel.setCurrentDestinationPosition(position)
+
             // Launch the trip detail edit
             parentFragmentManager.commit {
                 add(R.id.main_frame, TripDetailEdit.newInstance())
@@ -185,6 +187,15 @@ class TripDetailView : Fragment() {
         // Enable the back button
         setDisplayHomeAsUpEnabled(true)
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.fetchDestinations(position)
+            viewModel.weatherRefresh()
+        }
+
+        viewModel.observeRefreshDone().observe(viewLifecycleOwner) {
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+
         // Set up the floating action button
         setFloatingActionButton()
 
@@ -197,9 +208,6 @@ class TripDetailView : Fragment() {
         // Set up the adapter
         adapter = initAdapter(_binding!!)
         binding.recyclerView.adapter = adapter
-
-        // Find the a list of trip details matching the given ID
-        var selectedTripDetails = viewModel.getTripDetailByID(tripID)
 
         // Update the weather information
         viewModel.weatherRefresh()
@@ -223,9 +231,6 @@ class TripDetailView : Fragment() {
 
         // Let the view model observe changes in the trip weather
         viewModel.observeTripWeather().observe(viewLifecycleOwner) {
-
-            // Find the a list of trip details matching the given ID
-            selectedTripDetails = viewModel.getTripDetailByID(tripID)
 
             // Add to the adapter
             adapter.submitList(viewModel.observeCurrentDestinations().value)

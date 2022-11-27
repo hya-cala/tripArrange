@@ -1,13 +1,16 @@
 package com.example.totravel.database
 
 import android.util.Log
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import com.example.totravel.model.DestinationMeta
 import com.example.totravel.model.TripMeta
+import com.example.totravel.ui.main.MainViewModel
 import com.example.totravel.ui.main.TripWithDest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import edu.utap.photolist.FirestoreAuthLiveData
+import com.google.firebase.Timestamp
 
 class dbHelper() {
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -15,25 +18,27 @@ class dbHelper() {
     private val destinationCollection = "allDestinations"
     private val firebaseAuthLiveData = FirestoreAuthLiveData()
 
-    fun fetchTripMeta(tripList: MutableLiveData<List<TripWithDest>>) {
-        dbFetchTripMeta(tripList)
+    fun fetchTripMeta(tripList: MutableLiveData<List<TripWithDest>>, refreshDone: MutableLiveData<Boolean>) {
+        dbFetchTripMeta(tripList, refreshDone)
     }
 
-    fun fetchDestinationMeta(position: Int, tripList: MutableLiveData<List<TripWithDest>>) {
-        dbFetchDestinationMeta(position, tripList)
+    fun fetchDestinationMeta(position: Int, tripList: MutableLiveData<List<TripWithDest>>, refreshDone: MutableLiveData<Boolean>) {
+        dbFetchDestinationMeta(position, tripList, refreshDone)
     }
 
-    private fun dbFetchTripMeta(tripList: MutableLiveData<List<TripWithDest>>) {
+    private fun dbFetchTripMeta(tripList: MutableLiveData<List<TripWithDest>>, refreshDone: MutableLiveData<Boolean>) {
         val currentUser = firebaseAuthLiveData.getCurrentUser()!!
         limitAndGetTrip(
             db.collection(tripCollection)
                 .document(currentUser.uid)
                 .collection("Trips")
                 .orderBy("startDate"),
-            tripList)
+            tripList,
+            refreshDone,
+        )
     }
 
-    private fun dbFetchDestinationMeta(position: Int,tripList: MutableLiveData<List<TripWithDest>>) {
+    private fun dbFetchDestinationMeta(position: Int,tripList: MutableLiveData<List<TripWithDest>>, refreshDone: MutableLiveData<Boolean>) {
         val tripWithDest = tripList.value!![position]
         limitAndGetDestination(
             db.collection(destinationCollection)
@@ -41,22 +46,26 @@ class dbHelper() {
                 .collection("Destinations")
                 .orderBy("startDate"),
             position,
-            tripList)
+            tripList,
+            refreshDone
+        )
     }
 
-    private fun limitAndGetTrip(query: Query, tripList: MutableLiveData<List<TripWithDest>>) {
+    private fun limitAndGetTrip(query: Query, tripList: MutableLiveData<List<TripWithDest>>, refreshDone: MutableLiveData<Boolean>) {
         query.limit(100).get()
             .addOnSuccessListener { result ->
                 tripList.postValue(result.documents.mapNotNull {
                     it.toObject(TripMeta::class.java)?.let { it1 -> TripWithDest(it1,null) }
                 })
+                refreshDone.postValue(!refreshDone.value!!)
             }
             .addOnFailureListener {
+                refreshDone.postValue(!refreshDone.value!!)
                 Log.w(javaClass.simpleName, "Error when fetching trips", it)
             }
     }
 
-    private fun limitAndGetDestination(query: Query, position: Int,tripList: MutableLiveData<List<TripWithDest>>) {
+    private fun limitAndGetDestination(query: Query, position: Int,tripList: MutableLiveData<List<TripWithDest>>, refreshDone: MutableLiveData<Boolean>) {
         query.limit(100).get()
             .addOnSuccessListener { result ->
                 val newTrips = tripList.value!!.toMutableList()
@@ -64,12 +73,14 @@ class dbHelper() {
                     it.toObject(DestinationMeta::class.java)
                 }.toMutableList()
                 tripList.postValue(newTrips)
+                refreshDone.postValue(!refreshDone.value!!)
             }
     }
 
     fun createTripMeta(
         tripMeta: TripMeta,
-        tripList: MutableLiveData<List<TripWithDest>>
+        tripList: MutableLiveData<List<TripWithDest>>,
+        refreshDone: MutableLiveData<Boolean>
     ) {
         val currentUser = firebaseAuthLiveData.getCurrentUser()!!
         db.collection(tripCollection)
@@ -77,7 +88,7 @@ class dbHelper() {
             .collection("Trips")
             .add(tripMeta)
             .addOnSuccessListener {
-                dbFetchTripMeta(tripList)
+                dbFetchTripMeta(tripList, refreshDone)
             }
             .addOnFailureListener {
                 Log.w(javaClass.simpleName,"Error when adding a trip", it)
@@ -87,7 +98,8 @@ class dbHelper() {
     fun createDestinationMeta(
         destinationMeta: DestinationMeta,
         position: Int,
-        tripLists: MutableLiveData<List<TripWithDest>>
+        tripLists: MutableLiveData<List<TripWithDest>>,
+        refreshDone: MutableLiveData<Boolean>
     ) {
         val tripWithDest = tripLists.value?.get(position)
         db.collection(destinationCollection)
@@ -95,7 +107,7 @@ class dbHelper() {
             .collection("Destinations")
             .add(destinationMeta)
             .addOnSuccessListener {
-                dbFetchDestinationMeta(position, tripLists)
+                dbFetchDestinationMeta(position, tripLists, refreshDone)
             }
             .addOnFailureListener {
                 Log.w(javaClass.simpleName, "Error when adding a destination", it)
@@ -104,7 +116,8 @@ class dbHelper() {
 
     fun removeTripMeta(
         tripMeta: TripMeta,
-        tripList: MutableLiveData<List<TripWithDest>>
+        tripList: MutableLiveData<List<TripWithDest>>,
+        refreshDone: MutableLiveData<Boolean>
     ) {
         val currentUser = firebaseAuthLiveData.getCurrentUser()!!
         db.collection(tripCollection)
@@ -113,7 +126,7 @@ class dbHelper() {
             .document(tripMeta.firestoreID)
             .delete()
             .addOnSuccessListener {
-                dbFetchTripMeta(tripList)
+                dbFetchTripMeta(tripList, refreshDone)
             }
             .addOnFailureListener {
                 Log.w(javaClass.simpleName, "Error when removing a trip", it)
@@ -124,6 +137,7 @@ class dbHelper() {
         destinationMeta: DestinationMeta,
         tripPosition: Int,
         tripList: MutableLiveData<List<TripWithDest>>,
+        refreshDone: MutableLiveData<Boolean>
     ) {
         val tripWithDest = tripList.value?.get(tripPosition)
         db.collection(destinationCollection)
@@ -132,12 +146,40 @@ class dbHelper() {
             .document(destinationMeta.firestoreID)
             .delete()
             .addOnSuccessListener {
-                dbFetchDestinationMeta(tripPosition, tripList)
+                dbFetchDestinationMeta(tripPosition, tripList, refreshDone)
             }
             .addOnFailureListener {
                 Log.d(javaClass.simpleName, "Error when removing a destination", it)
             }
 
+    }
+    fun updateDestinationMeta(
+        destinationID: String,
+        description: String,
+        destination: String,
+        startDate: Timestamp,
+        endDate: Timestamp,
+        tripPosition: Int,
+        tripList: MutableLiveData<List<TripWithDest>>,
+        refreshDone: MutableLiveData<Boolean>
+    ) {
+        val tripWithDest = tripList.value?.get(tripPosition)
+        db.collection(destinationCollection)
+            .document(tripWithDest!!.tripMeta.firestoreID)
+            .collection("Destinations")
+            .document(destinationID)
+            .update(
+                "description", description,
+                "destination", destination,
+                "endDate", endDate,
+                "startDate", startDate,
+            )
+            .addOnSuccessListener {
+                dbFetchDestinationMeta(tripPosition, tripList, refreshDone)
+            }
+            .addOnFailureListener {
+                Log.d(javaClass.simpleName, "Error when updating a destination", it)
+            }
     }
 
 }

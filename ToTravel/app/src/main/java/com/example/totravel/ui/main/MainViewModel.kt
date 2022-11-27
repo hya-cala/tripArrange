@@ -57,6 +57,10 @@ class MainViewModel : ViewModel() {
     private var tripLists = MutableLiveData<List<TripWithDest>>()
 
     private val currentTrip = MutableLiveData<Int>()
+    private val currentDestinationPosition = MutableLiveData<Int>().apply { postValue(-1) }
+    private val refreshDone = MutableLiveData<Boolean>().apply {
+        postValue(true)
+    }
 
     private val currentDestinations = MediatorLiveData<MutableList<DestinationMeta>>()
     init {
@@ -82,27 +86,47 @@ class MainViewModel : ViewModel() {
     // Create a variable to store the ID for the trip detail to be updated
     private var oldTripDetailID = ""
 
+    fun observeRefreshDone(): LiveData<Boolean> {
+        return refreshDone
+    }
+
+    fun getCurrentDestinationPosition(): Int {
+        return currentDestinationPosition.value!!
+    }
+
+    fun getCurrentDestinationMeta(): DestinationMeta {
+        return currentDestinations.value!!.get(currentDestinationPosition.value!!)
+    }
+
+    fun setCurrentDestinationPosition(position: Int){
+        currentDestinationPosition.postValue(position)
+    }
+
+    fun changeRefreshDone() {
+        refreshDone.postValue(!refreshDone.value!!)
+    }
+
     fun fetchTrips() {
-        dbHelper.fetchTripMeta(tripLists)
+        dbHelper.fetchTripMeta(tripLists, refreshDone)
     }
 
     fun fetchDestinations(position: Int) {
-        if (tripLists.value == null || tripLists.value!![position].destinations != null) {
+        if (tripLists.value == null) {
             return
         }
-        dbHelper.fetchDestinationMeta(position, tripLists)
+        dbHelper.fetchDestinationMeta(position, tripLists, refreshDone)
     }
 
     fun removeTrip(position: Int) {
         val trip = tripLists.value?.get(position)
-        trip?.tripMeta?.let { dbHelper.removeTripMeta(it, tripLists) }
+        trip?.tripMeta?.let { dbHelper.removeTripMeta(it, tripLists, refreshDone) }
     }
 
     fun removeDestination(tripPosition: Int, destinationPosition: Int) {
         val trip = tripLists.value?.get(tripPosition)
         val destination = trip?.destinations?.get(destinationPosition)
         if (destination != null) {
-            dbHelper.removeDestinationMeta(destination,tripPosition, tripLists)
+            dbHelper.removeDestinationMeta(destination,tripPosition, tripLists, refreshDone)
         }
     }
 
@@ -115,7 +139,7 @@ class MainViewModel : ViewModel() {
             startDate = startDate,
             endDate = endDate,
         )
-        dbHelper.createTripMeta(tripMeta, tripLists)
+        dbHelper.createTripMeta(tripMeta, tripLists, refreshDone)
     }
 
     fun addDestination(
@@ -135,7 +159,27 @@ class MainViewModel : ViewModel() {
             startDate = startDate,
             endDate = endDate,
         )
-        dbHelper.createDestinationMeta(destinationMeta, tripPosition, tripLists)
+        dbHelper.createDestinationMeta(destinationMeta, tripPosition, tripLists, refreshDone)
+    }
+
+    fun updateDestination(
+        tripPosition: Int,
+        destination: String,
+        description: String,
+        startDate: Timestamp,
+        endDate: Timestamp,
+    ) {
+        val destinationId = getCurrentDestinationMeta().firestoreID
+        dbHelper.updateDestinationMeta(
+            tripPosition = tripPosition,
+            destination = destination,
+            description = description,
+            startDate = startDate,
+            endDate = endDate,
+            destinationID=destinationId,
+            refreshDone = refreshDone,
+            tripList = tripLists,
+        )
     }
 
     fun getCurrentTripPosition(): Int {
@@ -158,7 +202,7 @@ class MainViewModel : ViewModel() {
     fun getDestinationMetaList(position: Int): List<DestinationMeta> {
         val trip = tripLists.value?.get(position)
         if (trip != null && trip.destinations == null) {
-            dbHelper.fetchDestinationMeta(position, tripLists)
+            dbHelper.fetchDestinationMeta(position, tripLists, refreshDone)
         }
         return trip?.destinations?.toList() ?: emptyList()
     }
