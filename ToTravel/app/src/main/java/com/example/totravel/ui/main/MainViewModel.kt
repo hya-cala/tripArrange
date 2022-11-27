@@ -212,50 +212,19 @@ class MainViewModel : ViewModel() {
 
     }
 
-    // Remove a trip detail from the list
-    fun removeTripDetailAt(currentTripDetailPosition: Int) {
-
-        // Remove the key of the current trip detail from the key list
-        tripDayIDKeys.removeAt(currentTripDetailPosition)
-
-        // Remove the location of the current trip detail from the list
-        tripLocations.removeAt(currentTripDetailPosition)
-
-        // Retrieve the current trip detail list
-        val currentTripDetailList = getTripDetail()
-
-        // Remove current trip detail from the list
-        currentTripDetailList.removeAt(currentTripDetailPosition)
-
-        // Update the value
-        tripDetailList.postValue(currentTripDetailList)
-
-    }
-
-
-    // Get the trip locations matching a given ID
-    private fun getTripLocationByID(tripDetailID: String): List<String> {
-
-        // Get a list of trip locations that matches the given ID
-        val tripLocations = tripLocations.filter { it.tripID == tripDetailID }
-
-        // Return a list of locations
-        return tripLocations.map { it.location }
-
-    }
-
-    fun weatherRefresh(tripDetailID: String) {
+    fun weatherRefresh() {
 
         // Get a list of trip locations matching the given ID
-        val locations = getTripLocationByID(tripDetailID)
-
         viewModelScope.launch (
             context = viewModelScope.coroutineContext
                     + Dispatchers.IO) {
 
             // Retrieve the weather information corresponding to each location
-            weatherInfo.postValue(locations.map{ weatherRepository.fetchWeather(it, weatherAppID)})
-
+            weatherInfo.postValue(
+                currentDestinations.value?.map {destination ->
+                    weatherRepository.fetchWeather(destination.destination, weatherAppID)
+                }
+            )
         }
 
     }

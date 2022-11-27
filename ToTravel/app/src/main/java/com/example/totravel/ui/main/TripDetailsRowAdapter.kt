@@ -57,7 +57,7 @@ class TripDetailsRowAdapter(private val viewModel: MainViewModel,
         val binding = holder.tripDetailRowBinding
 
         // Set the travel date
-        binding.date.text = dateToString(destination.startDate!!.toDate())
+        binding.date.text = "${dateToString(destination.startDate!!.toDate())} - ${dateToString(destination.endDate!!.toDate())}"
 
         // Set the travel location
         binding.location.text = destination.destination

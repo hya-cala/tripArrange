@@ -97,7 +97,7 @@ class TripDetailView : Fragment() {
                                       direction: Int) {
                     val position = getPos(viewHolder)
                     Log.d(javaClass.simpleName, "Swipe delete $position")
-                    viewModel.removeTripDetailAt(position)
+                    viewModel.removeDestination(viewModel.getCurrentTripPosition(), position)
                 }
             }
         return ItemTouchHelper(simpleItemTouchCallback)
@@ -202,7 +202,7 @@ class TripDetailView : Fragment() {
         var selectedTripDetails = viewModel.getTripDetailByID(tripID)
 
         // Update the weather information
-        viewModel.weatherRefresh(tripID)
+        viewModel.weatherRefresh()
 
         // Notify the trip detail changes
         adapter.notifyDataSetChanged()
@@ -211,7 +211,7 @@ class TripDetailView : Fragment() {
         viewModel.observeCurrentDestinations().observe(viewLifecycleOwner) {
 
             // Update the weather information
-            viewModel.weatherRefresh(tripID)
+            viewModel.weatherRefresh()
 
             // Add to the adapter
             adapter.submitList(it.toList())

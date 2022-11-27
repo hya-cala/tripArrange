@@ -50,7 +50,7 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
             if (hasFocus) {
                 binding.datepicker.visibility=View.VISIBLE
                 if (!binding.inputETDateStart.text.isNullOrBlank()) {
-                    val date = DateTool.stringToDate(binding.inputETDateStart.text.toString())
+                    val date = stringToDate(binding.inputETDateStart.text.toString())
                     if (date != null) {
                         binding.datepicker.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
                             binding.inputETDateStart.setText(
