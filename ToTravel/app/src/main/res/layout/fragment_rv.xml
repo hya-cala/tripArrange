@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:background="#FFFFFFFF"
+    android:background="#FFFFFF"
     tools:showIn="@layout/activity_main">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -32,6 +32,10 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         app:srcCompat="@drawable/ic_add_white_24dp"
+        android:background="@color/fab"
+        android:backgroundTint="@color/fab"
+        app:borderWidth="0dp"
+        app:rippleColor="@color/detail_row"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
