@@ -27,6 +27,7 @@
         android:textColorHint="@color/hint_enter_details"
         android:textSize="@dimen/input_new_note"
         android:autofillHints=""
+        android:editable="false"
         />
     <EditText
         android:id="@+id/inputETDateEnd"
@@ -40,6 +41,7 @@
         android:textColorHint="@color/hint_enter_details"
         android:textSize="@dimen/input_new_note"
         android:autofillHints=""
+        android:editable="false"
         />
     <DatePicker
         android:layout_width="wrap_content"

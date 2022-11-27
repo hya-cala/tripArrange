@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.totravel.R
 import com.example.totravel.Tools.DateTool
+import com.example.totravel.Tools.DateTool.Companion.dateToString
 import com.example.totravel.Tools.DateTool.Companion.stringToDate
 import com.example.totravel.databinding.TripDetailEditBinding
 import com.example.totravel.model.DestinationMeta
@@ -46,11 +47,20 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
         // Put cursor in edit text
         binding.inputETDateStart.requestFocus()
 
+        if (viewModel.getCurrentDestinationPosition() != -1) {
+            val curDestination = viewModel.getCurrentDestinationMeta()
+            binding.inputETLocation.setText(curDestination.destination)
+            binding.inputETDateEnd.setText(dateToString(curDestination.endDate!!.toDate()))
+            binding.inputETDateStart.setText(dateToString(curDestination.startDate!!.toDate()))
+            binding.inputETNotes.setText(curDestination.description)
+        }
+
+
         binding.inputETDateStart.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 binding.datepicker.visibility=View.VISIBLE
                 if (!binding.inputETDateStart.text.isNullOrBlank()) {
-                    val date = DateTool.stringToDate(binding.inputETDateStart.text.toString())
+                    val date = stringToDate(binding.inputETDateStart.text.toString())
                     if (date != null) {
                         binding.datepicker.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
                             binding.inputETDateStart.setText(
@@ -147,23 +157,29 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                     Toast.makeText(activity, "Enter trip detail info!", Toast.LENGTH_LONG).show()
 
                 } else {
-
-                    // Create a trip day ID
-                    val tripDayID = "$tripID - $tripStartDate"
-
                     // Save the trip summary entry
-                    viewModel.addDestination(
-                        tripPosition = tripPosition,
-                        destination = binding.inputETLocation.text.toString(),
-                        description = binding.inputETNotes.text.toString(),
-                        startDate = Timestamp(stringToDate(tripStartDate)!!),
-                        endDate = Timestamp(stringToDate(tripEndDate)!!),
-                    )
-
+                    if (viewModel.getCurrentDestinationPosition() == -1) {
+                        viewModel.addDestination(
+                            tripPosition = tripPosition,
+                            destination = binding.inputETLocation.text.toString(),
+                            description = binding.inputETNotes.text.toString(),
+                            startDate = Timestamp(stringToDate(tripStartDate)!!),
+                            endDate = Timestamp(stringToDate(tripEndDate)!!),
+                        )
+                    } else {
+                        viewModel.updateDestination(
+                            tripPosition=tripPosition,
+                            destination = binding.inputETLocation.text.toString(),
+                            description = binding.inputETNotes.text.toString(),
+                            startDate = Timestamp(stringToDate(tripStartDate)!!),
+                            endDate = Timestamp(stringToDate(tripEndDate)!!),
+                        )
+                    }
                 }
 
                 // Exit the fragment
                 parentFragmentManager.popBackStack()
+                viewModel.setCurrentDestinationPosition(-1)
             } catch (e: Exception) {
                 Toast.makeText(context, "Something wrong happens, please try later.", Toast.LENGTH_SHORT)
             }
@@ -172,6 +188,7 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
         // Set onClickListener on the cancel button
         binding.cancelButton.setOnClickListener {
             parentFragmentManager.popBackStack()
+            viewModel.setCurrentDestinationPosition(-1)
         }
 
     }

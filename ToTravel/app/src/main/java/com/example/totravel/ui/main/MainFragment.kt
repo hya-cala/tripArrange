@@ -160,6 +160,14 @@ class MainFragment : Fragment() {
         val adapter = initAdapter(_binding!!)
         binding.recyclerView.adapter = adapter
 
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.fetchTrips()
+        }
+
+        viewModel.observeRefreshDone().observe(viewLifecycleOwner) {
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+
         // Set up the floating action button
         setFloatingActionButton()
 

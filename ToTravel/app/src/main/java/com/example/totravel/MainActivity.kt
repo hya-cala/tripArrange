@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+
         FirebaseApp.initializeApp(this)
 
         super.onCreate(savedInstanceState)
