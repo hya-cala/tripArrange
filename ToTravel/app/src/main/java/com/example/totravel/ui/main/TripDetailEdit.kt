@@ -1,7 +1,9 @@
 package com.example.totravel.ui.main
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -45,7 +47,7 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
         val tripID = viewModel.getTitle()
 
         // Put cursor in edit text
-        binding.inputETDateStart.requestFocus()
+        binding.inputETLocation.requestFocus()
 
         if (viewModel.getCurrentDestinationPosition() != -1) {
             val curDestination = viewModel.getCurrentDestinationMeta()
@@ -55,14 +57,27 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
             binding.inputETNotes.setText(curDestination.description)
         }
 
+        binding.inputETLocation.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus && !binding.inputETNotes.hasFocus()) {
+                val mgr = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                mgr.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+        }
+
+        binding.inputETLocation.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus && !binding.inputETLocation.hasFocus()) {
+                val mgr = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                mgr.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+        }
 
         binding.inputETDateStart.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                binding.datepicker.visibility=View.VISIBLE
+                binding.datepickerStart.visibility=View.VISIBLE
                 if (!binding.inputETDateStart.text.isNullOrBlank()) {
                     val date = stringToDate(binding.inputETDateStart.text.toString())
                     if (date != null) {
-                        binding.datepicker.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
+                        binding.datepickerStart.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
                             binding.inputETDateStart.setText(
                                 DateTool.dateToString(
                                     Date(
@@ -76,9 +91,18 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                     }
                 }else {
                     val current = LocalDate.now()
-                    binding.datepicker.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
+                    binding.inputETDateStart.setText(
+                        dateToString(
+                            Date(
+                                current.year - 1900,
+                                current.monthValue,
+                                current.dayOfMonth
+                            )
+                        )
+                    )
+                    binding.datepickerStart.init(current.year, current.monthValue - 1, current.dayOfMonth) {view, year, month, day ->
                         binding.inputETDateStart.setText(
-                            DateTool.dateToString(
+                            dateToString(
                                 Date(
                                     year - 1900,
                                     month,
@@ -89,19 +113,19 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                     }
                 }
             } else {
-                binding.datepicker.visibility = View.GONE
-                binding.datepicker.clearFocus()
+                binding.datepickerStart.visibility = View.GONE
+                binding.datepickerStart.clearFocus()
             }
 
         }
 
         binding.inputETDateEnd.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                binding.datepicker.visibility=View.VISIBLE
+                binding.datepickerEnd.visibility=View.VISIBLE
                 if (!binding.inputETDateEnd.text.isNullOrBlank()) {
                     val date = DateTool.stringToDate(binding.inputETDateEnd.text.toString())
                     if (date != null) {
-                        binding.datepicker.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
+                        binding.datepickerEnd.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
                             binding.inputETDateEnd.setText(
                                 DateTool.dateToString(
                                     Date(
@@ -115,7 +139,16 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                     }
                 }else {
                     val current = LocalDate.now()
-                    binding.datepicker.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
+                    binding.inputETDateEnd.setText(
+                        dateToString(
+                            Date(
+                                current.year - 1900,
+                                current.monthValue,
+                                current.dayOfMonth
+                            )
+                        )
+                    )
+                    binding.datepickerEnd.init(current.year, current.monthValue - 1, current.dayOfMonth) {view, year, month, day ->
                         binding.inputETDateEnd.setText(
                             DateTool.dateToString(
                                 Date(
@@ -128,8 +161,8 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                     }
                 }
             } else {
-                binding.datepicker.visibility = View.GONE
-                binding.datepicker.clearFocus()
+                binding.datepickerEnd.visibility = View.GONE
+                binding.datepickerEnd.clearFocus()
             }
 
         }

@@ -60,7 +60,16 @@ class TripSummaryEdit : Fragment(R.layout.trip_summary_edit) {
                     }
                 }else {
                     val current = LocalDate.now()
-                    binding.datePickerStart.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
+                    binding.inputETTripStartDate.setText(
+                        dateToString(
+                            Date(
+                                current.year - 1900,
+                                current.monthValue,
+                                current.dayOfMonth
+                            )
+                        )
+                    )
+                    binding.datePickerStart.init(current.year, current.monthValue -1 , current.dayOfMonth) {view, year, month, day ->
                         binding.inputETTripStartDate.setText(dateToString(Date(year-1900, month, day)))
                     }
                 }
@@ -83,7 +92,16 @@ class TripSummaryEdit : Fragment(R.layout.trip_summary_edit) {
                     }
                 }else {
                     val current = LocalDate.now()
-                    binding.datePickerEnd.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
+                    binding.inputETTripEndDate.setText(
+                        dateToString(
+                            Date(
+                                current.year - 1900,
+                                current.monthValue,
+                                current.dayOfMonth
+                            )
+                        )
+                    )
+                    binding.datePickerEnd.init(current.year, current.monthValue - 1, current.dayOfMonth) {view, year, month, day ->
                         binding.inputETTripEndDate.setText(dateToString(Date(year-1900, month, day)))
                     }
                 }
