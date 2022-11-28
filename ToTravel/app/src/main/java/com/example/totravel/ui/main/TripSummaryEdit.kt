@@ -64,7 +64,7 @@ class TripSummaryEdit : Fragment(R.layout.trip_summary_edit) {
                         dateToString(
                             Date(
                                 current.year - 1900,
-                                current.monthValue,
+                                current.monthValue - 1,
                                 current.dayOfMonth
                             )
                         )
@@ -96,7 +96,7 @@ class TripSummaryEdit : Fragment(R.layout.trip_summary_edit) {
                         dateToString(
                             Date(
                                 current.year - 1900,
-                                current.monthValue,
+                                current.monthValue - 1,
                                 current.dayOfMonth
                             )
                         )
@@ -128,34 +128,28 @@ class TripSummaryEdit : Fragment(R.layout.trip_summary_edit) {
                 Toast.makeText(activity, "Enter trip summary info!", Toast.LENGTH_LONG).show()
 
             } else {
-
-                // Create a trip ID
-                val tripID = "$tripName - $tripDate"
-
-                // Create a trip info object
-                val newTripInfo = TripInfo(tripName, tripDate, tripID)
-
                 // Save the trip summary entry
                 // TODO: remove those hardcoded things
                 val description = "test"
                 val startDate = stringToDate(binding.inputETTripStartDate.text.toString())
                 val endDate = stringToDate(binding.inputETTripEndDate.text.toString())
                 if (startDate == null || endDate == null) {
-                    Toast.makeText(context, "Please enter all the required information!", Toast.LENGTH_SHORT)
+                    Toast.makeText(activity, "Please enter all the required information!", Toast.LENGTH_SHORT).show()
                 } else {
-                    viewModel.addTrip(
-                        tripName,
-                        description = description,
-                        startDate = Timestamp(startDate),
-                        endDate = Timestamp(endDate),
-                    )
-                    // Exit the fragment
-                    parentFragmentManager.popBackStack()
+                    if (startDate > endDate) {
+                        Toast.makeText(activity, "Please check your start/end date!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.addTrip(
+                            tripName,
+                            description = description,
+                            startDate = Timestamp(startDate),
+                            endDate = Timestamp(endDate),
+                        )
+                        // Exit the fragment
+                        parentFragmentManager.popBackStack()
+                    }
                 }
-
-
             }
-
         }
 
         // Set onClickListener on the cancel button

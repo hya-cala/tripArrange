@@ -95,7 +95,7 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                         dateToString(
                             Date(
                                 current.year - 1900,
-                                current.monthValue,
+                                current.monthValue - 1,
                                 current.dayOfMonth
                             )
                         )
@@ -143,7 +143,7 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                         dateToString(
                             Date(
                                 current.year - 1900,
-                                current.monthValue,
+                                current.monthValue - 1,
                                 current.dayOfMonth
                             )
                         )
@@ -190,29 +190,35 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                     Toast.makeText(activity, "Enter trip detail info!", Toast.LENGTH_LONG).show()
 
                 } else {
+                    val startDate = Timestamp(stringToDate(tripStartDate)!!)
+                    val endDate = Timestamp(stringToDate(tripEndDate)!!)
                     // Save the trip summary entry
-                    if (viewModel.getCurrentDestinationPosition() == -1) {
+                    if (startDate > endDate) {
+                        Toast.makeText(activity, "Please check your start/end time.", Toast.LENGTH_SHORT).show()
+                    } else if (viewModel.getCurrentDestinationPosition() == -1) {
                         viewModel.addDestination(
                             tripPosition = tripPosition,
                             destination = binding.inputETLocation.text.toString(),
                             description = binding.inputETNotes.text.toString(),
-                            startDate = Timestamp(stringToDate(tripStartDate)!!),
-                            endDate = Timestamp(stringToDate(tripEndDate)!!),
+                            startDate = startDate,
+                            endDate = endDate,
                         )
+                        // Exit the fragment
+                        parentFragmentManager.popBackStack()
+                        viewModel.setCurrentDestinationPosition(-1)
                     } else {
                         viewModel.updateDestination(
                             tripPosition=tripPosition,
                             destination = binding.inputETLocation.text.toString(),
                             description = binding.inputETNotes.text.toString(),
-                            startDate = Timestamp(stringToDate(tripStartDate)!!),
-                            endDate = Timestamp(stringToDate(tripEndDate)!!),
+                            startDate = startDate,
+                            endDate = endDate,
                         )
+                        // Exit the fragment
+                        parentFragmentManager.popBackStack()
+                        viewModel.setCurrentDestinationPosition(-1)
                     }
                 }
-
-                // Exit the fragment
-                parentFragmentManager.popBackStack()
-                viewModel.setCurrentDestinationPosition(-1)
             } catch (e: Exception) {
                 Toast.makeText(context, "Something wrong happens, please try later.", Toast.LENGTH_SHORT)
             }
