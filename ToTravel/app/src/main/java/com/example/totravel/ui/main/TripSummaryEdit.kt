@@ -1,7 +1,9 @@
 package com.example.totravel.ui.main
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -40,48 +42,54 @@ class TripSummaryEdit : Fragment(R.layout.trip_summary_edit) {
 
         // Put cursor in edit text
         binding.inputETTripName.requestFocus()
+        binding.inputETTripName.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                val mgr = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                mgr.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+        }
         binding.inputETTripStartDate.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                binding.datePicker.visibility=View.VISIBLE
+                binding.datePickerStart.visibility=View.VISIBLE
                 if (!binding.inputETTripStartDate.text.isNullOrBlank()) {
                     val date = stringToDate(binding.inputETTripStartDate.text.toString())
                     if (date != null) {
-                        binding.datePicker.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
+                        binding.datePickerStart.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
                             binding.inputETTripStartDate.setText(dateToString(Date(year-1900, month, day)))
                         }
                     }
                 }else {
                     val current = LocalDate.now()
-                    binding.datePicker.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
+                    binding.datePickerStart.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
                         binding.inputETTripStartDate.setText(dateToString(Date(year-1900, month, day)))
                     }
                 }
             } else {
-                binding.datePicker.visibility = View.GONE
-                binding.datePicker.clearFocus()
+                binding.datePickerStart.visibility = View.GONE
+                binding.datePickerStart.clearFocus()
             }
 
         }
 
         binding.inputETTripEndDate.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                binding.datePicker.visibility=View.VISIBLE
+                binding.datePickerEnd.visibility=View.VISIBLE
                 if (!binding.inputETTripEndDate.text.isNullOrBlank()) {
                     val date = stringToDate(binding.inputETTripEndDate.text.toString())
                     if (date != null) {
-                        binding.datePicker.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
+                        binding.datePickerEnd.init(date.year + 1900, date.month, date.date) {view, year, month, day ->
                             binding.inputETTripEndDate.setText(dateToString(Date(year-1900, month, day)))
                         }
                     }
                 }else {
                     val current = LocalDate.now()
-                    binding.datePicker.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
+                    binding.datePickerEnd.init(current.year, current.dayOfMonth, current.dayOfYear) {view, year, month, day ->
                         binding.inputETTripEndDate.setText(dateToString(Date(year-1900, month, day)))
                     }
                 }
             } else {
-                binding.datePicker.visibility = View.GONE
-                binding.datePicker.clearFocus()
+                binding.datePickerEnd.visibility = View.GONE
+                binding.datePickerEnd.clearFocus()
             }
 
         }

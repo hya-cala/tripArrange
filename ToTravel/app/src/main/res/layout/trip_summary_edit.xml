@@ -8,60 +8,109 @@
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_margin"
     android:paddingRight="@dimen/activity_margin"
-    android:paddingTop="@dimen/activity_margin">
-
+    android:paddingTop="25dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Trip Name"
+        android:layout_marginBottom="10dp"
+        />
     <EditText
         android:id="@+id/inputETTripName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/enter_space"
         android:minLines="1"
-        android:background="@android:color/transparent"
         android:gravity="top"
+        android:padding="8dp"
+        android:paddingStart="15dp"
+        android:layout_marginBottom="10dp"
         android:hint="@string/hint_enter_trip_name"
-        android:inputType="none"
         android:textColorHint="@color/hint_enter_summary"
         android:textSize="@dimen/input_new_note"
+        android:textColor="@color/enter_text"
         android:autofillHints=""
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Start Date"
+        android:layout_marginBottom="10dp"
         />
     <EditText
         android:id="@+id/inputETTripStartDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minLines="1"
-        android:background="@android:color/transparent"
         android:gravity="top"
+        android:layout_marginBottom="10dp"
         android:hint="@string/hint_enter_start_date"
         android:inputType="none"
         android:textColorHint="@color/hint_enter_details"
         android:textSize="@dimen/input_new_note"
         android:autofillHints=""
+        android:padding="8dp"
+        android:textColor="@color/enter_text"
+        android:background="@drawable/enter_space"
+        android:focusable="true"
+        android:paddingStart="15dp"
         android:editable="false"
+        />
+    <DatePicker
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:datePickerMode="spinner"
+        android:visibility="gone"
+        android:calendarViewShown="false"
+        android:id="@+id/datePickerStart"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="End Date"
+        android:layout_marginBottom="10dp"
         />
     <EditText
         android:id="@+id/inputETTripEndDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minLines="1"
-        android:background="@android:color/transparent"
         android:gravity="top"
         android:hint="@string/hint_enter_end_date"
         android:inputType="none"
         android:textColorHint="@color/hint_enter_details"
         android:textSize="@dimen/input_new_note"
         android:autofillHints=""
+        android:padding="8dp"
+        android:textColor="@color/enter_text"
+        android:background="@drawable/enter_space"
+        android:paddingStart="15dp"
+        android:focusable="true"
         android:editable="false"
         />
     <DatePicker
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:datePickerMode="spinner"
         android:visibility="gone"
-        android:id="@+id/datePicker"/>
+        android:calendarViewShown="false"
+        android:id="@+id/datePickerEnd"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="10dp"
         >
         <Button
             android:layout_width="0dp"
@@ -77,6 +126,7 @@
             android:id="@+id/cancelButton"
             android:layout_weight="1"
             style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@color/hint_enter_details"
             android:text="@string/cancel"
             />
     </LinearLayout>
