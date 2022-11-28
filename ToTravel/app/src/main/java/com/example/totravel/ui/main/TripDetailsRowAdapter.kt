@@ -77,7 +77,6 @@ class TripDetailsRowAdapter(private val viewModel: MainViewModel,
             // Set the weather icon
             val weatherIcon = tripWeather[position].weather[0].icon
             val weatherURL = "http://openweathermap.org/img/wn/$weatherIcon@2x.png"
-            println(weatherURL)
 
             Glide.glideFetch(weatherURL, weatherURL, binding.ivWeatherCondition)
 

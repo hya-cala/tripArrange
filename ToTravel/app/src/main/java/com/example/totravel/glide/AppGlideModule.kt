@@ -48,8 +48,6 @@ object Glide {
 
 
     fun glideFetch(urlString: String, thumbnailURL: String, imageView: ImageView) {
-        println("jfdsljf" + fromHtml(urlString))
-
         GlideApp.with(imageView.context)
             .asBitmap() // Try to display animated Gifs and video still
             .load(fromHtml(urlString))
