@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.totravel.MainActivity
 import com.example.totravel.R
 import com.example.totravel.databinding.FragmentRvBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class MainFragment : Fragment() {
 
@@ -41,7 +42,6 @@ class MainFragment : Fragment() {
 
     // Set up the adapter
     private fun initAdapter(binding: FragmentRvBinding) : TripSummaryRowAdapter {
-
         viewModel.fetchTrips()
 
         // Initialize the adapter

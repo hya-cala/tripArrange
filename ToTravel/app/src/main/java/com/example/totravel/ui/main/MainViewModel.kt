@@ -67,14 +67,14 @@ class MainViewModel : ViewModel() {
         currentDestinations.addSource(
             tripLists
         ) {
-            if (currentTrip.value != null && tripLists.value != null) {
+            if (currentTrip.value != null && tripLists.value != null && currentTrip.value != -1) {
                 currentDestinations.postValue(
                     tripLists.value!![currentTrip.value!!].destinations ?: emptyList<DestinationMeta>().toMutableList()
                 )
             }
         }
         currentDestinations.addSource(currentTrip) {
-            if (currentTrip.value != null) {
+            if (currentTrip.value != null && currentTrip.value != -1) {
                 currentDestinations.postValue(
                     tripLists.value?.get(currentTrip.value!!)?.destinations ?: emptyList<DestinationMeta>().toMutableList()
                 )
@@ -299,6 +299,14 @@ class MainViewModel : ViewModel() {
     // Update the current signed-in user
     fun updateUser() {
         firebaseAuthLiveData.updateUser()
+    }
+
+    fun clearData() {
+        currentTrip.postValue(-1)
+        currentDestinationPosition.postValue(-1)
+        tripLists.postValue(emptyList())
+        currentDestinations.postValue(emptyList<DestinationMeta>().toMutableList())
+        weatherInfo.postValue(emptyList())
     }
 
 }
