@@ -35,7 +35,7 @@ object Glide {
         // list disappears.  I think that was an old bug.
         .fitCenter()
         // Rounded corners are so lovely.
-        .transform(RoundedCorners (20))
+        .transform(RoundedCorners (5))
 
     private fun fromHtml(source: String): String {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -48,13 +48,12 @@ object Glide {
 
 
     fun glideFetch(urlString: String, thumbnailURL: String, imageView: ImageView) {
+        println("jfdsljf" + fromHtml(urlString))
 
         GlideApp.with(imageView.context)
             .asBitmap() // Try to display animated Gifs and video still
             .load(fromHtml(urlString))
             .apply(glideOptions)
-            .error(R.color.colorAccent)
-            .override(width, height)
             .error(
                 GlideApp.with(imageView.context)
                     .asBitmap()

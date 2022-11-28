@@ -42,8 +42,9 @@
 
             <ImageView
                 android:id="@+id/iv_weather_condition"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:background="@drawable/image_shape"
                 android:scaleType="centerCrop"
                 tools:src="@drawable/haze" />
 
