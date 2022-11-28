@@ -309,4 +309,8 @@ class MainViewModel : ViewModel() {
         weatherInfo.postValue(emptyList())
     }
 
+    fun clearCurrentDestinations() {
+        currentDestinations.postValue(emptyList<DestinationMeta>().toMutableList())
+    }
+
 }
