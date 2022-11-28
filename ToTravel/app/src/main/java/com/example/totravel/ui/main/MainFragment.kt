@@ -154,9 +154,6 @@ class MainFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(binding.recyclerView.context)
 
         // Set up the adapter
-        val itemDecor = DividerItemDecoration(binding.recyclerView.context,
-            LinearLayoutManager.VERTICAL)
-        binding.recyclerView.addItemDecoration(itemDecor)
         val adapter = initAdapter(_binding!!)
         binding.recyclerView.adapter = adapter
 
