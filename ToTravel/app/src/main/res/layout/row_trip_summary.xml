@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:focusable="true"
+    android:clickable="true"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/summary_row"
+    app:cardCornerRadius="20dp">
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/selectableItemBackground"
-    android:padding="8dp"
+    android:padding="20dp"
     android:orientation="horizontal">
     <!-- Background attribute gives the whole layout the satisfying ripple
     effect on selection -->
@@ -34,3 +43,4 @@
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

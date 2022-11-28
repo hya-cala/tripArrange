@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:focusable="true"
     android:clickable="true"
     android:layout_margin="8dp"
+    app:cardCornerRadius="20dp"
+    app:cardBackgroundColor="@color/detail_row"
     android:background="?android:attr/selectableItemBackground">
     <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -13,6 +15,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:padding="20dp"
         tools:context=".MainActivity">
 
         <LinearLayout
@@ -110,7 +114,7 @@
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/notes"
                 android:layout_margin="2dp"
-                android:lines="6"
+                android:maxLines="6"
                 android:ellipsize="end"
                 android:textSize="12sp"
                 android:padding="10dp"

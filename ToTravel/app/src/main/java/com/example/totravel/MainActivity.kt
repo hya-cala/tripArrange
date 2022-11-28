@@ -13,6 +13,7 @@ import com.example.totravel.databinding.ActionBarBinding
 import com.example.totravel.databinding.ActivityMainBinding
 import com.example.totravel.ui.main.*
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import edu.utap.photolist.AuthInit
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             viewModel.updateUser()
+            addHomeFragment()
         } else {
             // Sign in failed. If response is null the user canceled the
             // sign-in flow using the back button. Otherwise check
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
     // Add a home fragment
     private fun addHomeFragment() {
-
+        currentFocus?.clearFocus()
         // No back stack for home
         supportFragmentManager.commit {
             add(R.id.main_frame, MainFragment.newInstance())
@@ -94,7 +96,17 @@ class MainActivity : AppCompatActivity() {
         initTitleObservers()
 
         // Add the home fragment
-        addHomeFragment()
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            addHomeFragment()
+        }
+
+
+        actionBarBinding?.logoutButton!!.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            viewModel.clearData()
+            viewModel.updateUser()
+            AuthInit(viewModel, signInLauncher)
+        }
 
     }
 }

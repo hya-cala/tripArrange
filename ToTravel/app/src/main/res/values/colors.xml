@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#B3DDD1</color>
+    <color name="colorPrimaryDark">#80BEAF</color>
+    <color name="summary_row">#D1DCE2</color>
+    <color name="fab">#E79796</color>
+    <color name="detail_row">#EDEDED</color>
     <color name="colorAccent">#D81B60</color>
     <color name="hint_enter_summary">#89c3c3c3</color>
     <color name="hint_enter_details">#858585</color>
