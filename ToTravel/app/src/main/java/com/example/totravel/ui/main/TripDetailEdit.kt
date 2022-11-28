@@ -11,10 +11,13 @@ import com.example.totravel.R
 import com.example.totravel.Tools.DateTool
 import com.example.totravel.Tools.DateTool.Companion.dateToString
 import com.example.totravel.Tools.DateTool.Companion.stringToDate
+import com.example.totravel.api.Repository
+import com.example.totravel.api.WeatherApi
 import com.example.totravel.databinding.TripDetailEditBinding
 import com.example.totravel.model.DestinationMeta
 import com.google.firebase.Timestamp
 import edu.utap.photolist.FirestoreAuthLiveData
+import retrofit2.HttpException
 import java.time.LocalDate
 import java.util.*
 
@@ -26,11 +29,23 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
     private var _binding: TripDetailEditBinding? = null
     private var firebaseAuthLiveData = FirestoreAuthLiveData()
 
+    // Initialize a Weather API object
+    private val weatherAPI = WeatherApi.create()
+
+    // Create a repository
+    private val weatherRepository = Repository(weatherAPI)
+
     private val binding get() = _binding!!
+
+    private val onSubmittingFailure: ()-> Unit = {
+        activity?.runOnUiThread {
+            Toast.makeText(activity, "Please check if the location is a valid city.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     companion object {
 
-        private const val tripIDKey = "tripID"
+        val weatherAppID = "484377a76210f32f50c49ada34d7aa9c"
 
         fun newInstance() : TripDetailEdit {
             return TripDetailEdit()
@@ -42,9 +57,6 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
 
         super.onViewCreated(view, savedInstanceState)
         _binding = TripDetailEditBinding.bind(view)
-
-        // Retrieve the trip ID
-        val tripID = viewModel.getTitle()
 
         // Put cursor in edit text
         binding.inputETLocation.requestFocus()
@@ -170,7 +182,6 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
         // Set onClickListener on the save button
         binding.saveButton.setOnClickListener {
             try {
-                val currentUser = firebaseAuthLiveData.getCurrentUser()!!
                 val tripPosition = viewModel.getCurrentTripPosition()
 
                 // Retrieve the trip date
@@ -180,8 +191,6 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                 // Retrieve the trip location
                 val tripLocation = binding.inputETLocation.text.toString()
 
-                // Retrieve the trip notes
-                val tripNotes = binding.inputETNotes.text.toString()
 
                 // Check if either date or location is missing
                 if (tripStartDate.isEmpty() || tripLocation.isEmpty() || tripEndDate.isEmpty()) {
@@ -192,31 +201,35 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
                 } else {
                     val startDate = Timestamp(stringToDate(tripStartDate)!!)
                     val endDate = Timestamp(stringToDate(tripEndDate)!!)
+                    val destination = binding.inputETLocation.text.toString()
                     // Save the trip summary entry
-                    if (startDate > endDate) {
-                        Toast.makeText(activity, "Please check your start/end time.", Toast.LENGTH_SHORT).show()
-                    } else if (viewModel.getCurrentDestinationPosition() == -1) {
-                        viewModel.addDestination(
-                            tripPosition = tripPosition,
-                            destination = binding.inputETLocation.text.toString(),
-                            description = binding.inputETNotes.text.toString(),
-                            startDate = startDate,
-                            endDate = endDate,
-                        )
-                        // Exit the fragment
-                        parentFragmentManager.popBackStack()
-                        viewModel.setCurrentDestinationPosition(-1)
-                    } else {
-                        viewModel.updateDestination(
-                            tripPosition=tripPosition,
-                            destination = binding.inputETLocation.text.toString(),
-                            description = binding.inputETNotes.text.toString(),
-                            startDate = startDate,
-                            endDate = endDate,
-                        )
-                        // Exit the fragment
-                        parentFragmentManager.popBackStack()
-                        viewModel.setCurrentDestinationPosition(-1)
+
+                    viewModel.checkLocation(destination, onSubmittingFailure) {
+                        if (startDate > endDate) {
+                            Toast.makeText(activity, "Please check your start/end time.", Toast.LENGTH_SHORT).show()
+                        } else if (viewModel.getCurrentDestinationPosition() == -1) {
+                            viewModel.addDestination(
+                                tripPosition = tripPosition,
+                                destination = destination,
+                                description = binding.inputETNotes.text.toString(),
+                                startDate = startDate,
+                                endDate = endDate,
+                            )
+                            // Exit the fragment
+                            parentFragmentManager.popBackStack()
+                            viewModel.setCurrentDestinationPosition(-1)
+                        } else {
+                            viewModel.updateDestination(
+                                tripPosition=tripPosition,
+                                destination = destination,
+                                description = binding.inputETNotes.text.toString(),
+                                startDate = startDate,
+                                endDate = endDate,
+                            )
+                            // Exit the fragment
+                            parentFragmentManager.popBackStack()
+                            viewModel.setCurrentDestinationPosition(-1)
+                        }
                     }
                 }
             } catch (e: Exception) {

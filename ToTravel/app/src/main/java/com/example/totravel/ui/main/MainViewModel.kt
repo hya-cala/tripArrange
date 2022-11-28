@@ -1,5 +1,6 @@
 package com.example.totravel.ui.main
 
+import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.totravel.api.CurrentWeatherResponse
 import com.example.totravel.api.Repository
@@ -11,6 +12,9 @@ import edu.utap.photolist.FirestoreAuthLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.google.firebase.Timestamp
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.cancel
+import retrofit2.HttpException
 
 
 data class TripInfo(val tripName: String, val tripDate: String, val tripID: String)
@@ -311,6 +315,24 @@ class MainViewModel : ViewModel() {
 
     fun clearCurrentDestinations() {
         currentDestinations.postValue(emptyList<DestinationMeta>().toMutableList())
+    }
+
+    fun checkLocation(location: String, onFailure: () -> Unit, onComplete: ()-> Unit) {
+        viewModelScope.launch (
+            context = viewModelScope.coroutineContext
+                    + Dispatchers.IO) {
+            try {
+                weatherRepository.fetchWeather(location, weatherAppID)
+            } catch( e: HttpException) {
+                cancel(CancellationException("Cannot find the place"))
+            }
+        }.invokeOnCompletion {
+            if (it == null) {
+                onComplete()
+            } else {
+                onFailure()
+            }
+        }
     }
 
 }
