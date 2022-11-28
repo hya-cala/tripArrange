@@ -52,7 +52,7 @@ class TripDetailView : Fragment() {
         viewModel.fetchDestinations(position)
 
         // Initialize the adapter
-        adapter = TripDetailsRowAdapter(viewModel) {tripID, tripDate ->
+        adapter = TripDetailsRowAdapter(viewModel) {tripID, tripDate, DesPos ->
 
             // Create a tripDayID
             val oldTripDayID = "$tripID - $tripDate"
@@ -60,7 +60,7 @@ class TripDetailView : Fragment() {
             // Set the ID for the old trip detail
             viewModel.setOldTripDetailID(oldTripDayID)
 
-            viewModel.setCurrentDestinationPosition(position)
+            viewModel.setCurrentDestinationPosition(DesPos)
 
             // Launch the trip detail edit
             parentFragmentManager.commit {

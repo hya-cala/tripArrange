@@ -13,7 +13,7 @@ import com.example.totravel.glide.Glide
 import com.example.totravel.model.DestinationMeta
 
 class TripDetailsRowAdapter(private val viewModel: MainViewModel,
-                            private val longClickListener: (tripID: String, tripDate: String) ->
+                            private val longClickListener: (tripID: String, tripDate: String, desPos: Int) ->
                             Unit)
     : ListAdapter<DestinationMeta, TripDetailsRowAdapter.VH>(TripDetailsDiff()){
 
@@ -31,7 +31,7 @@ class TripDetailsRowAdapter(private val viewModel: MainViewModel,
 
             // Set the onClickListener
             tripDetailRowBinding.root.setOnClickListener {
-                longClickListener(tripID, tripDate.text as String)}
+                longClickListener(tripID, tripDate.text as String, absoluteAdapterPosition)}
 
         }
 

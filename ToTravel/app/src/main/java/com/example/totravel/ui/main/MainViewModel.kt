@@ -99,6 +99,8 @@ class MainViewModel : ViewModel() {
     }
 
     fun getCurrentDestinationMeta(): DestinationMeta {
+        println(currentDestinations.value)
+        println(currentDestinationPosition.value)
         return currentDestinations.value!!.get(currentDestinationPosition.value!!)
     }
 
