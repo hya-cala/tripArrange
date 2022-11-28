@@ -244,8 +244,7 @@ class TripDetailView : Fragment() {
 
     override fun onDestroyView() {
         _binding = null
+        viewModel.clearCurrentDestinations()
         super.onDestroyView()
     }
-
-
 }

@@ -8,4 +8,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="hint_enter_summary">#89c3c3c3</color>
     <color name="hint_enter_details">#858585</color>
+    <color name="enter_title">#D8EBEF</color>
+    <color name="enter_text">#FA897B</color>
+    <color name="enter_background">#CBF8D8D2</color>
 </resources>
