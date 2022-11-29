@@ -1,6 +1,7 @@
 package com.example.totravel.ui.main
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -27,7 +28,7 @@ class TripDetailsRowAdapter(private val viewModel: MainViewModel,
             val tripID = viewModel.getTitle()
 
             // Get the text view of the trip date
-            val tripDate: TextView = tripDetailRowBinding.root.findViewById(R.id.date)
+            val tripDate: TextView = tripDetailRowBinding.root.findViewById(R.id.startdate)
 
             // Set the onClickListener
             tripDetailRowBinding.root.setOnClickListener {
@@ -57,13 +58,21 @@ class TripDetailsRowAdapter(private val viewModel: MainViewModel,
         val binding = holder.tripDetailRowBinding
 
         // Set the travel date
-        binding.date.text = "${dateToString(destination.startDate!!.toDate())} - ${dateToString(destination.endDate!!.toDate())}"
+        binding.startdate.text = "${dateToString(destination.startDate!!.toDate())} - "
+        binding.enddate.text = dateToString(destination.endDate!!.toDate())
 
         // Set the travel location
         binding.location.text = destination.destination
 
         // Set the travel notes
-        binding.notes.text = destination.description
+        if (destination.destination.isNullOrBlank()) {
+            binding.imageTextUnion.visibility = View.GONE
+        }
+        else {
+            binding.imageTextUnion.visibility = View.VISIBLE
+            binding.notes.text = destination.description
+        }
+
 
         // Check to make sure the entry is valid
         if (viewModel.validWeatherPosition(position)) {

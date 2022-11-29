@@ -28,7 +28,7 @@ class TripSummaryRowAdapter(private val viewModel: MainViewModel,
             val tripName: TextView = tripSummaryRowBinding.root.findViewById(R.id.tripName)
 
             // Get the text view of the trip date
-            val tripDate: TextView = tripSummaryRowBinding.root.findViewById(R.id.date)
+            val tripDate: TextView = tripSummaryRowBinding.root.findViewById(R.id.startDate)
 
             // Set the onClickListener
             tripSummaryRowBinding.root.setOnClickListener {
@@ -62,10 +62,16 @@ class TripSummaryRowAdapter(private val viewModel: MainViewModel,
 
         // Set the trip date
         if (trip.tripMeta.startDate?.toDate() == null) {
-            binding.date.text = ""
+            binding.startDate.text = ""
         } else {
-            binding.date.text = DateTool.dateToString(
+            binding.startDate.text = DateTool.dateToString(
                 trip.tripMeta.startDate?.toDate()!!)
+        }
+        if (trip.tripMeta.endDate?.toDate() == null) {
+            binding.endDate.text = ""
+        } else {
+            binding.endDate.text = DateTool.dateToString(
+                trip.tripMeta.endDate?.toDate()!!)
         }
 
 

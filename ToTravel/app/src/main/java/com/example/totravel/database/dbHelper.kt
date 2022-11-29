@@ -126,6 +126,17 @@ class dbHelper() {
             .document(tripMeta.firestoreID)
             .delete()
             .addOnSuccessListener {
+                println(tripMeta.firestoreID)
+                db.collection(destinationCollection)
+                    .document(tripMeta.firestoreID)
+                    .delete()
+                    .addOnFailureListener {
+                        println("sfdjlk")
+                        Log.w(javaClass.simpleName, "Error when removing related destinations", it)
+                    }
+                    .addOnSuccessListener {
+                        Log.d(javaClass.simpleName, "DocumentSnapshot successfully deleted!")
+                    }
                 dbFetchTripMeta(tripList, refreshDone)
             }
             .addOnFailureListener {

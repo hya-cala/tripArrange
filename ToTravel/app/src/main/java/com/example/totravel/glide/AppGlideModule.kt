@@ -27,8 +27,6 @@ class AppGlideModule : AppGlideModule() {
 // context allows it to track lifecycles for your fetch
 // https://stackoverflow.com/questions/31964737/glide-image-loading-with-application-context
 object Glide {
-    private val width = 50 //dthPixels
-    private val height = 50 //Resources.getSystem().displayMetrics.heightPixels
     private var glideOptions = RequestOptions ()
         // Options like CenterCrop are possible, but I like this one best
         // Evidently you need fitCenter or dontTransform.  If you use centerCrop, your
