@@ -206,7 +206,9 @@ class TripDetailEdit : Fragment(R.layout.trip_detail_edit) {
 
                     viewModel.checkLocation(destination, onSubmittingFailure) {
                         if (startDate > endDate) {
-                            Toast.makeText(activity, "Please check your start/end time.", Toast.LENGTH_SHORT).show()
+                            activity?.runOnUiThread {
+                                Toast.makeText(activity, "Please check your start/end time.", Toast.LENGTH_SHORT).show()
+                            }
                         } else if (viewModel.getCurrentDestinationPosition() == -1) {
                             viewModel.addDestination(
                                 tripPosition = tripPosition,

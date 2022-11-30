@@ -1,4 +1,5 @@
 <resources>
+<<<<<<< HEAD
     <string name="app_name">ToTravel</string>
     <string name="view_weather">View Weather</string>
     <string name="degree_celsius_symbol">°C</string>
@@ -17,4 +18,7 @@
     <string name="hint_enter_notes">Enter the notes!</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
+=======
+    <string name="app_name">To Travel</string>
+>>>>>>> main
 </resources>

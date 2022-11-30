@@ -1,41 +1,72 @@
 {
   "project_info": {
+<<<<<<< HEAD
     "project_number": "523319631752",
     "project_id": "totravel-85a6d",
     "storage_bucket": "totravel-85a6d.appspot.com"
+=======
+    "project_number": "135843755341",
+    "project_id": "to-travel-6ef1e",
+    "storage_bucket": "to-travel-6ef1e.appspot.com"
+>>>>>>> main
   },
   "client": [
     {
       "client_info": {
+<<<<<<< HEAD
         "mobilesdk_app_id": "1:523319631752:android:c98ee25f938fbe48e9a43d",
         "android_client_info": {
           "package_name": "com.example.totravel"
+=======
+        "mobilesdk_app_id": "1:135843755341:android:6b070d79b60fa2cc633304",
+        "android_client_info": {
+          "package_name": "rena.apps.totravel"
+>>>>>>> main
         }
       },
       "oauth_client": [
         {
+<<<<<<< HEAD
           "client_id": "523319631752-2lgtj4blcdkta7dtn1a74q40aqqqabhq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.totravel",
+=======
+          "client_id": "135843755341-24vtp7hepq85qbr2mjf9dij74rvfn02h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rena.apps.totravel",
+>>>>>>> main
             "certificate_hash": "195f47311384e22746a85b8e01ebbeccaf5c6b4a"
           }
         },
         {
+<<<<<<< HEAD
           "client_id": "523319631752-d258mqa1n56d3c98eubibud1jmdjthnd.apps.googleusercontent.com",
+=======
+          "client_id": "135843755341-v8keoe5e2ga9grup5uejektrlo7oerm5.apps.googleusercontent.com",
+>>>>>>> main
           "client_type": 3
         }
       ],
       "api_key": [
         {
+<<<<<<< HEAD
           "current_key": "AIzaSyAAVrSsIRD7WfSQV_EY8CK24S7YLAdeblU"
+=======
+          "current_key": "AIzaSyAwe9NQwnZlleiqG22buHjsLkhMT-bIHoI"
+>>>>>>> main
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
+<<<<<<< HEAD
               "client_id": "523319631752-d258mqa1n56d3c98eubibud1jmdjthnd.apps.googleusercontent.com",
+=======
+              "client_id": "135843755341-v8keoe5e2ga9grup5uejektrlo7oerm5.apps.googleusercontent.com",
+>>>>>>> main
               "client_type": 3
             }
           ]
