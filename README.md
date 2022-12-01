@@ -1,7 +1,5 @@
 # tripArrange
 
-Project for Android Programming in UT Austin
-
 
 
 #### Fonts used in the project
