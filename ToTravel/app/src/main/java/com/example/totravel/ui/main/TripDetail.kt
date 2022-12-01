@@ -167,7 +167,6 @@ class TripDetailView : Fragment() {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 // Menu is already inflated by main activity
             }
-            // XXX Write me, onMenuItemSelected
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
 

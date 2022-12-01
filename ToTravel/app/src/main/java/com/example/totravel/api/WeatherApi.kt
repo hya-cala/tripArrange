@@ -15,7 +15,6 @@ interface WeatherApi {
     // Thanks, retrofit!
     // Hardcode several parameters in the GET for simplicity
     // So URL can have & and ? characters
-    // XXX Write me: Retrofit annotation, see CatNet
     @GET("data/2.5/weather?&units=metric")
     suspend fun getCurrentWeatherData(
         @Query("q") lat: String?,
